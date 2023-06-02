@@ -1,6 +1,5 @@
 import { dft } from "../default";
 import { ILTableInitOptions } from "../index.d";
-import { PIXEL_RATIO } from "../../utils";
 
 export class CanvasCtx {
   ctx: CanvasRenderingContext2D | null = null;

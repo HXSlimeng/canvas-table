@@ -113,8 +113,6 @@ export class TableBody {
   }
 
   setData(data: anyObj[]) {
-    let currPoxH = this.headerH;
-
     data.forEach((row, y) => {
       Object.entries(row).forEach(([key, val]) => {
         const col = this.colMap.get(key);
@@ -122,7 +120,7 @@ export class TableBody {
         if (col) {
           const { startX, width, iX } = col;
 
-          let rectParmas = { iX, iY: y, text: val, startX, startY: this.headerH + y * currPoxH, width, height: this.cellH };
+          let rectParmas = { iX, iY: y, text: val, startX, startY: this.headerH + y * this.cellH, width, height: this.cellH };
 
           this.cells.push(new Cell(rectParmas, this.bodyStyle));
         }
