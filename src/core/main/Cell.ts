@@ -9,10 +9,17 @@ export class Cell {
     bgColor: dft.bgColor,
     fontColor: dft.fontColor,
   };
+  ctx: CanvasRenderingContext2D;
+  active = false;
+  private activeStyle = {
+    bgColor: dft.actBgColor,
+    fontColor: dft.actFtColor,
+  };
 
-  constructor(rectParams: ICellParams, cellStyle?: ICellStyle) {
+  constructor(ctx: CanvasRenderingContext2D, rectParams: ICellParams, cellStyle?: ICellStyle) {
     this.rectParams = rectParams;
     cellStyle && (this.cellStyle = cellStyle);
+    this.ctx = ctx;
   }
 
   get drawParams() {
@@ -27,10 +34,14 @@ export class Cell {
     };
   }
 
-  render(ctx: CanvasRenderingContext2D) {
+  render() {
     const { startX, startY, text, height, width } = this.drawParams;
-    const { bgColor, fontColor } = this.cellStyle;
+    const { bgColor, fontColor } = this.active ? this.activeStyle : this.cellStyle;
+    const { ctx } = this;
 
+    this.clear();
+
+    ctx.save();
     //单元格边框
     ctx.fillStyle = bgColor || dft.bgColor;
     ctx.strokeStyle = dft.borderColor;
@@ -43,6 +54,12 @@ export class Cell {
     ctx.textBaseline = "middle";
     ctx.fillStyle = fontColor || dft.fontColor;
     ctx.fillText(text, startX + width / 2, startY + height / 2, width);
+    ctx.restore();
+  }
+
+  clear() {
+    const { startX, startY, width, height } = this.drawParams;
+    this.ctx.clearRect(startX, startY, width, height);
   }
   rtf(params: number) {
     return params * RATIO;

@@ -78,3 +78,15 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 }
+
+.scrollBottom {
+  left: 0;
+  bottom: 0;
+}
+.scrollRight {
+  right: 0;
+}
+.scroll {
+  border-radius: 10px;
+  position: absolute;
+}

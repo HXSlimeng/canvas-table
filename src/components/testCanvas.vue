@@ -1,6 +1,7 @@
 <template>
-  <canvas id="l-table"></canvas>
-  <div style="width: 100px; height: 40px; background-color: red"></div>
+  <div style="display: flex; justify-content: center">
+    <canvas id="l-table"> </canvas>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -20,7 +21,7 @@ function setTable() {
   }));
   const tbInstance = setUpTable("#l-table", {
     column: mockData,
-    columnH: 100,
+    columnH: 50,
   });
 
   let data = Array.from({ length: 1000 }).map((_, y) => {

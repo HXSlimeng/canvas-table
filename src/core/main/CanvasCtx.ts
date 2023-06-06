@@ -1,12 +1,11 @@
 import { dft } from "../default";
 import { ILTableInitOptions } from "../index.d";
-
+import { RATIO } from "../../utils";
 export class CanvasCtx {
   ctx: CanvasRenderingContext2D | null = null;
   //   ctxW: number = 0;
   //   ctxH: number = 0;
   el: HTMLCanvasElement | null = null;
-  ratio: number = 1;
   style = {
     scrollLeft: 0,
     scrollTop: 0,
@@ -31,9 +30,7 @@ export class CanvasCtx {
   }
 
   setCanvasSize(size: ILTableInitOptions["size"]) {
-    this.ratio = devicePixelRatio;
-
-    const { el, ratio } = this;
+    const { el } = this;
     const { w: defaultW, h: defaultH } = dft;
 
     if (!el) return this;
@@ -42,15 +39,15 @@ export class CanvasCtx {
     cfgW = size?.width || defaultW;
     cfgH = size?.height || defaultH;
 
-    this.style.height = el.width = cfgW * ratio;
-    this.style.height = el.height = cfgH * ratio;
+    this.style.height = el.width = cfgW * RATIO;
+    this.style.height = el.height = cfgH * RATIO;
 
     el.setAttribute("style", `width:${cfgW}px;height:${cfgH}px;`);
 
     return this;
   }
 
-  clearDraw() {
+  clearDraw(startPoint, endPoint) {
     const { height, width } = this.style;
     this.ctx?.clearRect(0, 0, width, height);
   }
