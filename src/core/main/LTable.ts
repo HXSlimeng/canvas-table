@@ -1,17 +1,22 @@
 import { dft } from "../default";
-import { anyObj, ILTableInitOptions, ItableColumn, IColumnMap, IheaderOption, IbodyOption } from "../index.d";
+import {
+  anyObj,
+  ILTableInitOptions,
+  ItableColumn,
+  IColumnMap,
+  IheaderOption,
+  IbodyOption,
+} from "../index.d";
 import { CanvasCtx } from "./CanvasCtx";
-import { Cell, ScrollBar } from "./";
+import { Cell, ScrollBar } from "./index";
 
 export class Table extends CanvasCtx {
-  header: TableHeader | undefined = undefined;
-  body: TableBody | undefined = undefined;
-  scrollBar: ScrollBar | undefined = undefined;
+  header: TableHeader;
+  body: TableBody;
+  scrollBar: ScrollBar;
 
-  constructor(dom: HTMLCanvasElement | string, options: ILTableInitOptions) {
+  constructor(dom: HTMLCanvasElement, options: ILTableInitOptions) {
     super(dom, options.size);
-
-    if (!this.ctx) return;
 
     const { column, columnH } = options;
 
@@ -21,8 +26,11 @@ export class Table extends CanvasCtx {
 
     this.header = new TableHeader(this.ctx, column, { cellH: colH });
     this.body = new TableBody(this.ctx, this.header.columnMap, { colH });
-    this.scrollBar = new ScrollBar(dom, colH);
-    this.style.scrollWidth = options.column.reduce((a, b) => b.width || dftW + a, 0);
+    this.scrollBar = new ScrollBar(this.ctx, colH, () => this.afterScroll());
+    // this.style.scrollWidth = options.column.reduce(
+    //   (a, b) => b.width || dftW + a,
+    //   0
+    // );
 
     this.header.render();
   }
@@ -32,27 +40,28 @@ export class Table extends CanvasCtx {
     // this.tableData = [];
   }
 
-  // drawCol(cols: ItableColumn[]) {
-  //   const {} = this.ctx!.getTransform();
-  //   // console.log(transForm);
-  //   this.columns = cols;
+  // get scrollHeight() {
+  //   if (this.body) {
+  //     const { rows, cellH } = this.body
+  //     return rows.length * cellH
+  //   }
+  //   return 0
   // }
-  scroll() {
-    this.ctx?.translate(0, -1);
-    // this.drawCol(this.columns);
-    // this.setData(this.totalData);
-    // this.ctx?.translate(1000, 0);
-  }
 
   set data(data: anyObj[]) {
-    this.body?.setData(data);
-    this.body?.render();
+    this.body.setData(data);
+    this.scrollBar.scrollHeight = data.length * this.body.cellH;
   }
 
-  repaint() {
-    // this.setData(this.tableData);
-    // this.columns = this.columnInfo;
+  afterScroll() {
+    this.body.render();
+    this.header.fixPosition(this.scrollBar.scrollTop);
   }
+
+  // setScroll() {
+  // let ifShowScrollY = this.scrollHeight + this.header!.height > this.style.height
+  // this.scrollBar.showScrollY = ifShowScrollY
+  // }
 }
 
 export class TableHeader {
@@ -60,31 +69,45 @@ export class TableHeader {
   ctx: CanvasRenderingContext2D;
   cells: Cell[];
   metaData: ItableColumn[];
+  height: number;
   width: number;
   headerStyle = {
     bgColor: "#f5f7fa",
     fontColor: "#909399",
   };
 
-  constructor(ctx: CanvasRenderingContext2D, columns: ItableColumn[], option?: IheaderOption) {
+  constructor(
+    ctx: CanvasRenderingContext2D,
+    columns: ItableColumn[],
+    option?: IheaderOption
+  ) {
     this.metaData = columns;
     this.ctx = ctx;
+    this.height = option?.cellH || dft.cellH;
     {
-      let currPosX = 0;
+      let totalW = 0;
 
       this.cells = columns.map(({ title, prop, width }, x) => {
         let caculateW = width || option?.cellW || dft.cellW;
-        let caculateH = option?.cellH || dft.cellH;
+        let caculateH = this.height;
 
         let startX = x * caculateW;
-        let rectParmas = { iX: x, iY: 0, text: title, width: caculateW, height: caculateH, startX, startY: 0 };
+        let rectParmas = {
+          iX: x,
+          iY: 0,
+          text: title,
+          width: caculateW,
+          height: caculateH,
+          startX,
+          startY: 0,
+        };
 
         this.columnMap.set(prop, { startX, width: caculateW, iX: x });
-        currPosX += caculateW;
+        totalW += caculateW;
 
         return new Cell(this.ctx, rectParmas, this.headerStyle);
       });
-      this.width = currPosX;
+      this.width = totalW;
     }
     //tbHeader宽度
   }
@@ -93,8 +116,11 @@ export class TableHeader {
     this.cells.forEach((cell) => cell.render());
   }
 
-  get maxWidth() {
-    return;
+  fixPosition(scrollTop: number) {
+    this.cells.forEach((cell) => {
+      cell.rectParams.startY = scrollTop;
+      cell.render();
+    });
   }
 }
 export class TableBody {
@@ -103,15 +129,21 @@ export class TableBody {
   colMap: IColumnMap;
   cellH: number;
   headerH: number;
-  bodyStyle = {
+
+  private style = {
     bgColor: "white",
     fontColor: "black",
   };
-  constructor(ctx: CanvasRenderingContext2D, colMap: IColumnMap, option: IbodyOption) {
+  constructor(
+    ctx: CanvasRenderingContext2D,
+    colMap: IColumnMap,
+    option: IbodyOption
+  ) {
     this.ctx = ctx;
     this.colMap = colMap;
     this.cellH = option?.cellH || dft.cellH;
     this.headerH = option.colH;
+    // setStyle(this.ctx.canvas, { 'zIndex': '20', position: 'relative' })
     this.eventHandler();
   }
 
@@ -124,35 +156,49 @@ export class TableBody {
         if (col) {
           const { startX, width, iX } = col;
 
-          let rectParmas = { iX, iY: y, text: val, startX, startY: this.headerH + y * this.cellH, width, height: this.cellH };
+          let rectParmas = {
+            iX,
+            iY: y,
+            text: val,
+            startX,
+            startY: this.headerH + y * this.cellH,
+            width,
+            height: this.cellH,
+          };
 
           // this.cells
-          rowItem.push(new Cell(this.ctx, rectParmas, this.bodyStyle));
+          rowItem.push(new Cell(this.ctx, rectParmas, this.style));
         }
       });
       this.rows.push(new Row(rowItem, row));
     });
+    this.render();
   }
 
-  get on() {
+  private get on() {
     return this.ctx.canvas;
   }
-  get off() {
+  private get off() {
     return this.ctx.canvas.removeEventListener;
   }
+
   eventHandler() {
-    this.on.addEventListener("mousemove", (e) => {
-      const { offsetY } = e;
+    this.ctx.canvas.addEventListener("mousemove", (e) => {
+      //toggle active by hover
+      {
+        const { offsetY } = e;
 
-      let preAct = this.rows.find((v) => v.active);
+        let preAct = this.rows.find((v) => v.active);
 
-      let activeIndex = (offsetY - this.headerH) / this.cellH;
+        let activeIndex = (offsetY - this.headerH) / this.cellH;
 
-      let finIndex = parseInt(activeIndex.toString());
+        let finIndex = parseInt(activeIndex.toString());
 
-      if (preAct === this.rows[finIndex]) return;
-      if (preAct) preAct.active = false;
-      if (this.rows[finIndex].active != true) this.rows[finIndex].active = true;
+        if (preAct === this.rows[finIndex]) return;
+        if (preAct) preAct.active = false;
+        if (this.rows[finIndex].active != true)
+          this.rows[finIndex].active = true;
+      }
     });
   }
 

@@ -89,4 +89,15 @@ button:focus-visible {
 .scroll {
   border-radius: 10px;
   position: absolute;
+  opacity: 0.6;
+}
+.scrollY_inner {
+  width: 8px;
+  margin: 1px;
+  height: 20px;
+  background-color: rgb(36, 36, 36);
+  border-radius: 10px;
+}
+.hidden {
+  display: none;
 }

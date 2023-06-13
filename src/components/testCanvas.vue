@@ -23,24 +23,17 @@ function setTable() {
     column: mockData,
     columnH: 50,
   });
-
-  let data = Array.from({ length: 1000 }).map((_, y) => {
+  console.time("开始时间");
+  let data = Array.from({ length: 100000 }).map((_, y) => {
     let obj: anyObj = {};
     mockData.forEach(({ prop }, x) => {
       obj[prop] = `${x}-${y}`;
     });
     return obj;
   });
+  console.timeEnd("开始时间");
 
   tbInstance.data = data;
-
-  (function scroll() {
-    // requestAnimationFrame(() => {
-    // tbInstance.scroll();
-    // tbInstance.repaint();
-    // scroll();
-    // });
-  })();
 }
 onUnmounted(() => {});
 </script>

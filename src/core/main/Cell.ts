@@ -1,10 +1,9 @@
 import { ICellParams, ICellStyle } from "../index.d";
 import { dft } from "./../default";
-import { RATIO } from "../../utils";
+import { RATIO } from "../../utils/index";
 
 export class Cell {
   rectParams: ICellParams;
-  renderValue: any;
   cellStyle: ICellStyle = {
     bgColor: dft.bgColor,
     fontColor: dft.fontColor,
@@ -16,7 +15,11 @@ export class Cell {
     fontColor: dft.actFtColor,
   };
 
-  constructor(ctx: CanvasRenderingContext2D, rectParams: ICellParams, cellStyle?: ICellStyle) {
+  constructor(
+    ctx: CanvasRenderingContext2D,
+    rectParams: ICellParams,
+    cellStyle?: ICellStyle
+  ) {
     this.rectParams = rectParams;
     cellStyle && (this.cellStyle = cellStyle);
     this.ctx = ctx;
@@ -36,7 +39,9 @@ export class Cell {
 
   render() {
     const { startX, startY, text, height, width } = this.drawParams;
-    const { bgColor, fontColor } = this.active ? this.activeStyle : this.cellStyle;
+    const { bgColor, fontColor } = this.active
+      ? this.activeStyle
+      : this.cellStyle;
     const { ctx } = this;
 
     this.clear();
@@ -48,12 +53,15 @@ export class Cell {
     ctx.strokeRect(startX, startY, width, height);
     ctx.fillRect(startX, startY, width, height);
 
+    // ctx.globalCompositeOperation = 'destination-over'
+
     //单元格文本
     ctx.font = `${RATIO}rem sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = fontColor || dft.fontColor;
     ctx.fillText(text, startX + width / 2, startY + height / 2, width);
+
     ctx.restore();
   }
 
