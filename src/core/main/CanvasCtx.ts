@@ -1,6 +1,6 @@
 import { dft } from "../default";
 import { ILTableInitOptions } from "../index.d";
-import { RATIO } from "../../utils";
+import { RATIO, rtf } from "../../utils";
 export class CanvasCtx {
   ctx: CanvasRenderingContext2D;
   el: HTMLCanvasElement;
@@ -24,8 +24,8 @@ export class CanvasCtx {
     this.style.width = cfgW = size?.width || defaultW;
     this.style.height = cfgH = size?.height || defaultH;
 
-    el.width = cfgW * RATIO;
-    el.height = cfgH * RATIO;
+    el.width = rtf(cfgW)
+    el.height = rtf(cfgH)
 
     el.setAttribute("style", `width:${cfgW}px;height:${cfgH}px;`);
 
@@ -37,10 +37,4 @@ export class CanvasCtx {
     this.ctx.clearRect(0, 0, width, height);
   }
 
-  // //平移
-  // move(x: number, y: number) {
-  //   this.style.scrollLeft = x;
-  //   this.style.scrollTop += y;
-  //   this.ctx.translate(x, -y);
-  // }
 }

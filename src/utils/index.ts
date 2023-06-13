@@ -34,3 +34,11 @@ export function addOn<K extends keyof HTMLElementEventMap>(target: HTMLElement, 
   }
 }
 
+export function rtf(params: number) {
+  return params * RATIO;
+}
+
+export function dertf(params: number) {
+  return params / RATIO
+}
+

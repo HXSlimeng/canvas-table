@@ -1,3 +1,4 @@
+import { dertf, rtf } from "../../utils";
 import { dft } from "../default";
 import {
   anyObj,
@@ -27,11 +28,8 @@ export class Table extends CanvasCtx {
     this.header = new TableHeader(this.ctx, column, { cellH: colH });
     this.body = new TableBody(this.ctx, this.header.columnMap, { colH });
     this.scrollBar = new ScrollBar(this.ctx, colH, () => this.afterScroll());
-    // this.style.scrollWidth = options.column.reduce(
-    //   (a, b) => b.width || dftW + a,
-    //   0
-    // );
 
+    //setup时 先绘制已经确定的表头
     this.header.render();
   }
 
@@ -40,17 +38,11 @@ export class Table extends CanvasCtx {
     // this.tableData = [];
   }
 
-  // get scrollHeight() {
-  //   if (this.body) {
-  //     const { rows, cellH } = this.body
-  //     return rows.length * cellH
-  //   }
-  //   return 0
-  // }
-
   set data(data: anyObj[]) {
     this.body.setData(data);
     this.scrollBar.scrollHeight = data.length * this.body.cellH;
+    console.log(this.scrollBar.scrollHeight);
+
   }
 
   afterScroll() {
@@ -58,10 +50,6 @@ export class Table extends CanvasCtx {
     this.header.fixPosition(this.scrollBar.scrollTop);
   }
 
-  // setScroll() {
-  // let ifShowScrollY = this.scrollHeight + this.header!.height > this.style.height
-  // this.scrollBar.showScrollY = ifShowScrollY
-  // }
 }
 
 export class TableHeader {
@@ -116,6 +104,7 @@ export class TableHeader {
     this.cells.forEach((cell) => cell.render());
   }
 
+  //在重绘时固定表头
   fixPosition(scrollTop: number) {
     this.cells.forEach((cell) => {
       cell.rectParams.startY = scrollTop;
@@ -129,6 +118,7 @@ export class TableBody {
   colMap: IColumnMap;
   cellH: number;
   headerH: number;
+  currentRenderRows: Row[] = []
 
   private style = {
     bgColor: "white",
@@ -175,13 +165,6 @@ export class TableBody {
     this.render();
   }
 
-  private get on() {
-    return this.ctx.canvas;
-  }
-  private get off() {
-    return this.ctx.canvas.removeEventListener;
-  }
-
   eventHandler() {
     this.ctx.canvas.addEventListener("mousemove", (e) => {
       //toggle active by hover
@@ -202,21 +185,44 @@ export class TableBody {
     });
   }
 
+  get visibleRangeData() {
+    const { f: minY } = this.ctx.getTransform()
+    const { height } = this.ctx.canvas
+    const maxY = -minY + height
+
+    return this.rows.filter(row => {
+      return row.rowRangeMin <= maxY && row.rowRangeMin >= -minY
+    })
+  }
+
   render() {
-    this.rows.forEach((v) => v.render());
+    //render前将缓存的图像clear
+    this.currentRenderRows.forEach(row => row.clear())
+    this.currentRenderRows = this.visibleRangeData
+
+    this.currentRenderRows.forEach(row => row.render())
+
   }
 }
 
 export class Row {
   rowInfo: anyObj;
   cells: Cell[];
+  rowRangeMin: number
   private rowActive = false;
   constructor(cells: Cell[], info: anyObj) {
     this.rowInfo = info;
     this.cells = cells;
+
+    const { drawParams: { startY } } = cells[0]
+    this.rowRangeMin = startY
+
   }
   render() {
     this.cells.forEach((v) => v.render());
+  }
+  clear() {
+    this.cells.forEach(cell => cell.clear())
   }
   set active(val: boolean) {
     this.rowActive = val;

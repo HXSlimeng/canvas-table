@@ -1,6 +1,6 @@
 import { ICellParams, ICellStyle } from "../index.d";
 import { dft } from "./../default";
-import { RATIO } from "../../utils/index";
+import { RATIO, rtf } from "../../utils/index";
 
 export class Cell {
   rectParams: ICellParams;
@@ -26,7 +26,6 @@ export class Cell {
   }
 
   get drawParams() {
-    const { rtf } = this;
     const { startX, startY, width, height, text } = this.rectParams;
     return {
       text,
@@ -44,7 +43,7 @@ export class Cell {
       : this.cellStyle;
     const { ctx } = this;
 
-    this.clear();
+    // this.clear();
 
     ctx.save();
     //单元格边框
@@ -67,9 +66,9 @@ export class Cell {
 
   clear() {
     const { startX, startY, width, height } = this.drawParams;
+    this.ctx.save()
     this.ctx.clearRect(startX, startY, width, height);
+    this.ctx.restore()
   }
-  rtf(params: number) {
-    return params * RATIO;
-  }
+
 }

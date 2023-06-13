@@ -15,9 +15,13 @@ export interface ILTableInitOptions {
 }
 
 export interface ICellParams {
+  //列
   iX: number;
+  //行
   iY: number;
+  //开始点
   startX: number;
+  //结束点
   startY: number;
   width?: number;
   height?: number;

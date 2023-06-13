@@ -1,4 +1,4 @@
-import { addClass, addOn, setStyle } from "../../utils/index";
+import { addClass, addOn, rtf, setStyle } from "../../utils/index";
 import "../../style.css";
 import { h } from "../../utils/render";
 import { dft } from "../default";
@@ -130,7 +130,7 @@ export class ScrollBar {
     //@ts-ignore`
     this.scrollY.dom.classList[action]("hidden");
   }
-  set scrollWidth(val: number) {}
+  set scrollWidth(val: number) { }
   set scrollHeight(val: number) {
     this.info.scrollHeight = val;
     let inner = document.createElement("div");
@@ -211,7 +211,8 @@ export class ScrollBar {
       this.scrollTop += y;
     }
 
-    this.ctx.translate(x, -y);
+    //
+    this.ctx.translate(x, -rtf(y));
     this.bodyRepaint();
   }
 }
