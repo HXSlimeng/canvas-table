@@ -27,10 +27,13 @@ export function setStyle(target: HTMLElement, styleOpt: IStyleObj) {
   Object.entries(styleOpt).forEach(([key, val]) => (target.style[key] = val));
 }
 
+type IEventItem = {
+  [key in keyof HTMLElementEventMap]: [key, (event: HTMLElementEventMap[key]) => void]
+}[keyof HTMLElementEventMap]
 
-export function addOn<K extends keyof HTMLElementEventMap>(target: HTMLElement, events: [K, (event: HTMLElementEventMap[K]) => any][]) {
+export function addOn(target: HTMLElement, events: IEventItem[]) {
   for (const [type, callback] of events) {
-    target.addEventListener(type, callback)
+    target.addEventListener(type, <any>callback)
   }
 }
 

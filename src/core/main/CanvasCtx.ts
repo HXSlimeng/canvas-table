@@ -1,6 +1,6 @@
 import { dft } from "../default";
 import { ILTableInitOptions } from "../index.d";
-import { RATIO, rtf } from "../../utils";
+import { addClass, rtf } from "../utils";
 export class CanvasCtx {
   ctx: CanvasRenderingContext2D;
   el: HTMLCanvasElement;
@@ -13,7 +13,7 @@ export class CanvasCtx {
     this.el = dom;
 
     this.ctx = <CanvasRenderingContext2D>this.el.getContext("2d");
-    // this.ctx.globalCompositeOperation = 'destination-over'
+    addClass(this.el, 'canvas-root')
     this.setCanvasSize(size);
   }
 
@@ -32,9 +32,9 @@ export class CanvasCtx {
     return this;
   }
 
-  clearDraw(startPoint, endPoint) {
-    const { height, width } = this.style;
-    this.ctx.clearRect(0, 0, width, height);
-  }
+  // clearDraw(startPoint, endPoint) {
+  //   const { height, width } = this.style;
+  //   this.ctx.clearRect(0, 0, width, height);
+  // }
 
 }

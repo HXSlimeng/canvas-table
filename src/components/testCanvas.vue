@@ -23,7 +23,7 @@ function setTable() {
     column: mockData,
     columnH: 50,
   });
-  let data = Array.from({ length: 6000 }).map((_, y) => {
+  let data = Array.from({ length: 100 }).map((_, y) => {
     let obj: anyObj = {};
     mockData.forEach(({ prop }, x) => {
       obj[prop] = `${x}-${y}`;
@@ -37,7 +37,7 @@ onUnmounted(() => {});
 </script>
 <style>
 #l-table {
-  border: solid 1px #8f8f8f;
+  /* border: solid 1px #8f8f8f; */
   /* border-radius: 20px; */
 }
 </style>

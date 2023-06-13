@@ -1,6 +1,6 @@
-import { addClass, addOn, rtf, setStyle } from "../../utils/index";
+import { addClass, addOn, rtf, setStyle } from "../utils/index";
 import "../../style.css";
-import { h } from "../../utils/render";
+import { h } from "../utils/render";
 import { dft } from "../default";
 
 export interface IScroll {
@@ -14,7 +14,6 @@ export interface IScroll {
 }
 
 export class ScrollBar {
-  rootDom: HTMLCanvasElement;
   headerH: number;
 
   private scrollY: IScroll;
@@ -37,12 +36,12 @@ export class ScrollBar {
     headerH: number,
     bodyRepaint: Function
   ) {
-    this.rootDom = ctx.canvas;
+    const rootDom = ctx.canvas;
     this.ctx = ctx;
     this.bodyRepaint = bodyRepaint;
     this.headerH = headerH;
     const { width: canvasW, height: canvasH } =
-      this.rootDom.getBoundingClientRect();
+      rootDom.getBoundingClientRect();
     this.canvasH = canvasH;
     this.canvasW = canvasW;
 
@@ -57,29 +56,15 @@ export class ScrollBar {
   }
 
   get canvasWrapper() {
-    return this.rootDom.parentElement;
+    return this.ctx.canvas.parentElement;
   }
+
+
+
   mount() {
-    const { rootDom, headerH, canvasH, canvasW } = this;
+    const { headerH, canvasH, canvasW } = this;
+    const canvasDom = this.ctx.canvas
 
-    //set canvas wrapper
-    const warpper = h("div");
-    setStyle(warpper, {
-      width: canvasW + "px",
-      height: canvasH + "px",
-      position: "relative",
-    });
-    addClass(warpper, "canvas-warpper");
-
-    //set body wrapper
-    const bodyWrapper = h("div");
-    setStyle(bodyWrapper, {
-      position: "absolute",
-      top: headerH + "px",
-      width: canvasW + "px",
-      height: canvasH - headerH + "px",
-    });
-    addClass(bodyWrapper, "body-wrapper");
 
     //vertical Scroll
     let verticalScroll = h("div");
@@ -112,12 +97,8 @@ export class ScrollBar {
       movedLen: 0,
     };
 
-    rootDom.after(warpper);
-    this.rootDom.remove();
-    warpper.append(rootDom);
-    warpper.append(verticalScroll);
-    warpper.append(horizonScroll);
-    warpper.append(bodyWrapper);
+    canvasDom.after(verticalScroll);
+    canvasDom.after(horizonScroll);
     return [scrollX, scrollY];
   }
   set showScrollY(val: boolean) {
@@ -130,7 +111,11 @@ export class ScrollBar {
     //@ts-ignore`
     this.scrollY.dom.classList[action]("hidden");
   }
+
+
   set scrollWidth(val: number) { }
+
+
   set scrollHeight(val: number) {
     this.info.scrollHeight = val;
     let inner = document.createElement("div");
@@ -150,23 +135,22 @@ export class ScrollBar {
       len: innerH,
     };
 
-    // this.scrollY_inner = inner;
-    // this.scrollY_dom.appendChild(inner);
     this.scrollY.dom.appendChild(inner);
 
     let showScrollY = val > this.bodyHeight;
 
     this.showScrollY = showScrollY;
 
-    if (showScrollY) {
-      let bodyWrapper = this.canvasWrapper!.querySelector(".body-wrapper");
+    // if (showScrollY) {
 
-      let wheelEvt = (event: WheelEvent) => {
-        const { deltaY } = event;
-        this.move(0, deltaY);
-      };
-      addOn(bodyWrapper as HTMLElement, [["wheel", wheelEvt]]);
-    }
+    //   let bodyWrapper = this.canvasWrapper!.querySelector(".body-wrapper");
+
+    //   let wheelEvt = (event: WheelEvent) => {
+    //     const { deltaY } = event;
+    //     this.move(0, deltaY);
+    //   };
+    //   addOn(bodyWrapper as HTMLElement, [["wheel", wheelEvt]]);
+    // }
   }
   get scrollHeight() {
     return this.info.scrollHeight;

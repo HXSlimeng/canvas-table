@@ -3,16 +3,16 @@ export const dft = {
   h: 500,
   cellW: 100,
   cellH: 40,
-  strokeStyle: "rgb(96, 98, 102)",
+  strokeStyle: "rgba(84, 84, 84,.54)",
   tAlign: "center",
   tBaseLine: "middle",
-  bgColor: "#fff",
-  fontColor: "#000",
-  borderColor: "rgb(96, 98, 102)",
+  bgColor: "#1a1a1a",
+  fontColor: "rgba(245, 251, 248, 0.88)",
+  borderColor: "rgba(84, 84, 84,.54)",
   actBgColor: "#c1dcfcdd",
   actFtColor: "#000",
-  scrollBg: "#d3d3d3",
-  scrollW: 10,
+  scrollBg: "#424242",
+  scrollW: 12,
 };
 
 export const styleTag = {

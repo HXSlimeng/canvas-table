@@ -55,3 +55,5 @@ export type IbodyOption = tableBaseOption & {
 export interface anyObj {
   [key: string]: any;
 }
+
+export type IEventMapFun = <K extends keyof HTMLElementEventMap>(type: K, event: HTMLElementEventMap[K]) => void

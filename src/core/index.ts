@@ -1,6 +1,6 @@
 import { Table } from "./main/LTable";
 import { ILTableInitOptions } from "./index.d";
-import { getType } from "../utils";
+import { getType } from "./utils";
 
 type IsetupTableMt = (dom: HTMLCanvasElement | string, options: ILTableInitOptions) => Table;
 

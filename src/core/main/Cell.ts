@@ -1,6 +1,6 @@
 import { ICellParams, ICellStyle } from "../index.d";
 import { dft } from "./../default";
-import { RATIO, rtf } from "../../utils/index";
+import { RATIO, rtf } from "../utils/index";
 
 export class Cell {
   rectParams: ICellParams;

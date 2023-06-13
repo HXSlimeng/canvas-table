@@ -29,6 +29,7 @@ body {
   place-items: center;
   min-width: 320px;
   min-height: 100vh;
+  background-color: #1a1a1a;
 }
 
 h1 {
@@ -87,17 +88,24 @@ button:focus-visible {
   right: 0;
 }
 .scroll {
-  border-radius: 10px;
+  border-radius: 3px;
   position: absolute;
-  opacity: 0.6;
+  display: flex;
 }
 .scrollY_inner {
   width: 8px;
-  margin: 1px;
+  margin: 0px 2px;
   height: 20px;
-  background-color: rgb(36, 36, 36);
-  border-radius: 10px;
+  background-color: #686868;
+  border-radius: 3px;
 }
 .hidden {
   display: none;
 }
+.canvas-root {
+  border: solid 1px rgba(84, 84, 84, 0.54);
+  border-radius: 5px;
+}
+/* .canvas-wrapper {
+  border-radius: 20px;
+} */
