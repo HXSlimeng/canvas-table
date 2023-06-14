@@ -31,6 +31,7 @@ export interface ICellParams {
 export interface ICellStyle {
   bgColor?: string;
   fontColor?: string;
+  font?: string
 }
 
 export type IColumnMap = Map<

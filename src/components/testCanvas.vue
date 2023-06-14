@@ -23,7 +23,7 @@ function setTable() {
     column: mockData,
     columnH: 50,
   });
-  let data = Array.from({ length: 100 }).map((_, y) => {
+  let data = Array.from({ length: 10000 }).map((_, y) => {
     let obj: anyObj = {};
     mockData.forEach(({ prop }, x) => {
       obj[prop] = `${x}-${y}`;

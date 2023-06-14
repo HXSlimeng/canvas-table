@@ -10,8 +10,9 @@ export class TableHeader {
     height: number;
     width: number;
     headerStyle = {
-        bgColor: "#242424",
-        fontColor: dft.fontColor,
+        bgColor: "#262727",
+        fontColor: "#A3A6AD",
+        font: 'bold'
     };
 
     constructor(

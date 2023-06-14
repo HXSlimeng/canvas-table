@@ -4,15 +4,13 @@ import { RATIO, rtf } from "../utils/index";
 
 export class Cell {
   rectParams: ICellParams;
-  cellStyle: ICellStyle = {
-    bgColor: dft.bgColor,
-    fontColor: dft.fontColor,
-  };
+  cellStyle: ICellStyle
   ctx: CanvasRenderingContext2D;
   active = false;
   private activeStyle = {
     bgColor: dft.actBgColor,
     fontColor: dft.actFtColor,
+    font: ''
   };
 
   constructor(
@@ -21,7 +19,7 @@ export class Cell {
     cellStyle?: ICellStyle
   ) {
     this.rectParams = rectParams;
-    cellStyle && (this.cellStyle = cellStyle);
+    this.cellStyle = cellStyle || { fontColor: dft.fontColor, bgColor: dft.bgColor };
     this.ctx = ctx;
   }
 
@@ -38,9 +36,10 @@ export class Cell {
 
   render() {
     const { startX, startY, text, height, width } = this.drawParams;
-    const { bgColor, fontColor } = this.active
+    const { bgColor, fontColor, font } = this.active
       ? this.activeStyle
       : this.cellStyle;
+
     const { ctx } = this;
 
     // this.clear();
@@ -55,7 +54,7 @@ export class Cell {
     // ctx.globalCompositeOperation = 'destination-over'
 
     //单元格文本
-    ctx.font = `${RATIO}rem sans-serif`;
+    ctx.font = `${font || ''} ${RATIO}rem sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = fontColor || dft.fontColor;
@@ -66,9 +65,7 @@ export class Cell {
 
   clear() {
     const { startX, startY, width, height } = this.drawParams;
-    this.ctx.save()
     this.ctx.clearRect(startX, startY, width, height);
-    this.ctx.restore()
   }
 
 }

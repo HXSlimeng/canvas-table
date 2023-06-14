@@ -33,7 +33,9 @@ export class Table extends CanvasCtx {
 
     //setup时 先绘制已经确定的表头
     this.header.render();
+
     this.setEventListener()
+    // this.autoScroll()
   }
 
   set data(data: anyObj[]) {
@@ -46,6 +48,13 @@ export class Table extends CanvasCtx {
     this.header.fixPosition(this.scrollBar.scrollTop);
   }
 
+  autoScroll() {
+    window.requestAnimationFrame(() => {
+      this.scrollBar.move(0, 100)
+      this.autoScroll()
+    })
+  }
+
   setEventListener() {
     const bodyWrapper = this.wrapper.bodyWrapper
 
@@ -56,21 +65,30 @@ export class Table extends CanvasCtx {
 
     const mousemoveEvent = (event: MouseEvent) => {
 
-      const { rows, cellH } = this.body
+      {
+        //行悬浮  active状态
+        const { rows, cellH } = this.body
 
-      const { offsetY } = event;
-      let { scrollTop } = this.scrollBar
+        const { offsetY } = event;
+        let { scrollTop } = this.scrollBar
 
-      let preAct = rows.find((v) => v.active);
+        let preAct = rows.find((v) => v.active);
 
-      let activeIndex = (offsetY + scrollTop) / cellH;
+        let activeIndex = (offsetY + scrollTop) / cellH;
 
-      let finIndex = parseInt(activeIndex.toString());
+        let finIndex = parseInt(activeIndex.toString());
 
-      if (preAct === rows[finIndex]) return;
-      if (preAct) preAct.active = false;
-      if (rows[finIndex].active != true)
-        rows[finIndex].active = true;
+        if (preAct === rows[finIndex]) return;
+
+        if (preAct) preAct.active = false;
+
+        if (!rows[finIndex].active)
+          rows[finIndex].active = true;
+
+        //重新绘制表头  防止 后绘制的row 覆盖
+        this.header.render()
+      }
+
     }
 
     addOn(bodyWrapper, [
