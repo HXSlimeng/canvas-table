@@ -28,6 +28,7 @@ export class TableBody {
     }
 
     setData(data: anyObj[]) {
+        this.rows = []
         data.forEach((row, y) => {
             let rowItem: Cell[] = [];
             Object.entries(row).forEach(([key, val]) => {
@@ -63,6 +64,10 @@ export class TableBody {
         return this.rows.filter(row => {
             return row.rowRangeMin <= maxY && row.rowRangeMin >= -minY
         })
+    }
+
+    clear() {
+        this.rows.forEach(row => row.clear())
     }
 
     render() {

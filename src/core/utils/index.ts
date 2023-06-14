@@ -36,6 +36,18 @@ export function addOn(target: HTMLElement, events: IEventItem[]) {
     target.addEventListener(type, <any>callback)
   }
 }
+export function removeOn(target: HTMLElement, events: IEventItem[]) {
+  for (const [type, callback] of events) {
+    target.removeEventListener(type, <any>callback)
+  }
+}
+
+export function on<K extends keyof HTMLElementEventMap>(target: HTMLElement, key: K, callback: (event: HTMLElementEventMap[K]) => void) {
+  target.addEventListener(key, callback)
+}
+export function off<K extends keyof HTMLElementEventMap>(target: HTMLElement, key: K, callback: (event: HTMLElementEventMap[K]) => void) {
+  target.removeEventListener(key, callback)
+}
 
 export function rtf(params: number) {
   return params * RATIO;

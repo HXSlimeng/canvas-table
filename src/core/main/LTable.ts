@@ -30,15 +30,25 @@ export class Table extends CanvasCtx {
     this.body = new TableBody(this.ctx, this.header.columnMap, { colH });
     this.wrapper = new Wrapper(this.ctx, colH)
     this.scrollBar = new ScrollBar(this.ctx, colH, () => this.afterScroll());
-
+    this.scrollBar.scrollWidth = this.header.width
     //setup时 先绘制已经确定的表头
     this.header.render();
+
+    // this.wrapper.obSize(() => {
+    //   this.setSize()
+    //   this.scrollBar.resize()
+    //   this.body.render()
+    //   this.header.render()
+    // })
 
     this.setEventListener()
     // this.autoScroll()
   }
 
   set data(data: anyObj[]) {
+    this.scrollBar.scrollLeft = 0
+    this.scrollBar.scrollTop = 0
+    this.ctx.resetTransform()
     this.body.setData(data);
     this.scrollBar.scrollHeight = data.length * this.body.cellH;
   }
@@ -50,7 +60,7 @@ export class Table extends CanvasCtx {
 
   autoScroll() {
     window.requestAnimationFrame(() => {
-      this.scrollBar.move(0, 100)
+      this.scrollBar.move('x', 1)
       this.autoScroll()
     })
   }
@@ -60,7 +70,7 @@ export class Table extends CanvasCtx {
 
     const wheelEvent = (event: WheelEvent) => {
       const { deltaY } = event
-      this.scrollBar.move(0, deltaY)
+      this.scrollBar.move('y', deltaY)
     }
 
     const mousemoveEvent = (event: MouseEvent) => {
@@ -88,13 +98,13 @@ export class Table extends CanvasCtx {
         //重新绘制表头  防止 后绘制的row 覆盖
         this.header.render()
       }
-
     }
 
     addOn(bodyWrapper, [
       ['wheel', wheelEvent],
       ['mousemove', mousemoveEvent]
     ])
+
   }
 
 

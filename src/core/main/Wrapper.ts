@@ -7,7 +7,6 @@ export class Wrapper {
     container: HTMLElement
     bodyWrapper: HTMLElement
 
-
     constructor(ctx: CanvasRenderingContext2D, headerH: number) {
         this.ctx = ctx
         this.headerH = headerH
@@ -16,7 +15,7 @@ export class Wrapper {
         this.container = container
         this.bodyWrapper = bodyWrapper
 
-        this.setUpEvent()
+        // this.setUpEvent()
     }
     mount() {
         const { width: canvasW, height: canvasH } = this.ctx.canvas.getBoundingClientRect()
@@ -25,6 +24,8 @@ export class Wrapper {
         setStyle(container, {
             width: canvasW + "px",
             height: canvasH + "px",
+            // width: '100%',
+            // height: '100%',
             position: "relative",
         });
         addClass(container, "canvas-container");
@@ -51,7 +52,21 @@ export class Wrapper {
     }
 
 
-    setUpEvent() {
+    obSize(callback: Function) {
+        const resizeOb = new ResizeObserver((entries) => {
+
+            callback()
+
+            const { width: canvasW, height: canvasH } = this.ctx.canvas.getBoundingClientRect()
+            setStyle(this.bodyWrapper, {
+                height: canvasH - this.headerH + "px",
+                width: canvasW + 'px'
+            })
+
+        })
+        resizeOb.observe(this.container)
+
+
         // const wheelEvent = (event: WheelEvent | MouseEvent) => {
         //     this.emit('wheel', event)
         // }

@@ -46,6 +46,8 @@ export class TableHeader {
 
                 return new Cell(this.ctx, rectParmas, this.headerStyle);
             });
+            console.log(totalW);
+
             this.width = totalW;
         }
         //tbHeader宽度

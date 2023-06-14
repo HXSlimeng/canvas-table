@@ -91,6 +91,11 @@ button:focus-visible {
   border-radius: 3px;
   position: absolute;
   display: flex;
+  z-index: 2;
+}
+.scroll:hover > .scrollY_inner {
+  opacity: 1;
+  transition: opacity 0.3s;
 }
 .scrollY_inner {
   width: 8px;
@@ -98,7 +103,22 @@ button:focus-visible {
   height: 20px;
   background-color: #686868;
   border-radius: 3px;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+  position: absolute;
 }
+.scrollX_inner {
+  height: 8px;
+  margin: 2px 0px;
+  background-color: #686868;
+  border-radius: 3px;
+  opacity: 0.7;
+  transition: opacity 0.3s;
+  position: absolute;
+}
+/* .scrollY_inner:hover {
+ 
+} */
 .hidden {
   display: none;
 }

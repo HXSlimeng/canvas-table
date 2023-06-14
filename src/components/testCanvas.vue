@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex; justify-content: center">
+  <div style="display: flex; justify-content: center; width: 60vw; height: 60vh">
     <canvas id="l-table"> </canvas>
   </div>
 </template>
@@ -15,7 +15,7 @@ onMounted(() => {
 });
 
 function setTable() {
-  let mockData = Array.from({ length: 9 }).map((_, i) => ({
+  let mockData = Array.from({ length: 12 }).map((_, i) => ({
     title: `col-${i}`,
     prop: `col${i}`,
   }));
