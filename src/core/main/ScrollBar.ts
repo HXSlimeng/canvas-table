@@ -1,4 +1,4 @@
-import { addClass, addOn, off, on, rtf, setStyle } from "../utils/index";
+import { addClass, addOn, display, off, on, rtf, setStyle } from "../utils/index";
 import "../../style.css";
 import { h } from "../utils/render";
 import { dft } from "../default";
@@ -7,6 +7,7 @@ export interface IScroll {
   dom: HTMLElement;
   len: number;
   movedLen: number;
+  show: boolean
   inner?: {
     dom: HTMLElement;
     len: number;
@@ -72,13 +73,15 @@ export class ScrollBar {
       width: `${dft.scrollW}px`,
       background: dft.scrollBg,
       top: headerH.toString() + "px",
+      visibility: 'hidden'
     });
 
-    addClass(verticalScroll, "scrollRight", "scroll");
+    addClass(verticalScroll, "scrollRight", "scroll", 'hidden');
     let scrollY = {
       dom: verticalScroll,
       len: verticalTotalLen,
       movedLen: 0,
+      show: false
     };
 
     //horizon Scroll
@@ -89,29 +92,38 @@ export class ScrollBar {
       height: `${dft.scrollW}px`,
       width: horizonTotalLen + "px",
       background: dft.scrollBg,
+      visibility: 'hidden'
     });
-    addClass(horizonScroll, "scrollBottom", "scroll");
+    addClass(horizonScroll, "scrollBottom", "scroll", 'hidden');
     let scrollX = {
       dom: horizonScroll,
       len: horizonTotalLen,
       movedLen: 0,
+      show: false
     };
 
     canvasDom.after(verticalScroll);
     canvasDom.after(horizonScroll);
+    [verticalScroll, horizonScroll].forEach(dom => {
+
+      on(dom, 'transitionend', () => {
+        const opacity = getComputedStyle(dom).opacity
+        if (opacity === '0') {
+          dom.style.visibility = 'hidden'
+        }
+      })
+    })
+
     return [scrollX, scrollY];
   }
-  set showScrollY(val: boolean) {
-    let action = val ? "remove" : "add";
-    //@ts-ignore
-    this.scrollY.dom.classList[action]("hidden");
-  }
-  set showScrollX(val: boolean) {
-    let action = val ? "add" : "remove";
-    //@ts-ignore`
-    this.scrollY.dom.classList[action]("hidden");
+
+  get showScrollY() {
+    return this.scrollY.show
   }
 
+  get showScrollX() {
+    return this.scrollX.show
+  }
 
   set scrollWidth(val: number) {
     this.info.scrollWidth = val
@@ -138,9 +150,7 @@ export class ScrollBar {
       left: '0px',
     })
 
-    let showScrollX = val > realBodyW
-
-    this.showScrollX = showScrollX
+    this.scrollX.show = val > realBodyW
   }
 
   get scrollWidth() {
@@ -176,7 +186,8 @@ export class ScrollBar {
 
     let showScrollY = val > this.bodyHeight;
 
-    this.showScrollY = showScrollY;
+    this.scrollY.show = showScrollY
+    // this.showScrollY = showScrollY;
 
     // if (showScrollY) {
 
@@ -189,6 +200,7 @@ export class ScrollBar {
     //   addOn(bodyWrapper as HTMLElement, [["wheel", wheelEvt]]);
     // }
   }
+
   get scrollHeight() {
     return this.info.scrollHeight;
   }
@@ -243,12 +255,12 @@ export class ScrollBar {
       } else {
         this.scrollTop += val;
       }
+
       this.ctx.translate(0, -rtf(val));
       this.repaint();
     } else {
       let moveX = this.scrollLeft + val
       let max = this.scrollWidth - this.canvasW
-      console.log(this.scrollLeft);
 
       if (moveX < 0) {
         val = -this.scrollLeft
@@ -275,14 +287,30 @@ export class ScrollBar {
       }
       this.move(type, val)
     }
+
     const downEvent = () => {
       addEventListener('mousemove', moveEvent)
       on(dom, 'mouseup', () => {
         off(dom, 'mousemove', moveEvent)
       })
     }
+
     on(dom, 'mousedown', downEvent)
+
     addEventListener('mouseup', () => removeEventListener('mousemove', moveEvent))
+  }
+
+  toogleScrollIfNeed(show: boolean) {
+
+    const { scrollX, scrollY } = this
+
+    if (show) {
+      scrollX.dom.style.visibility = 'visible'
+      scrollY.dom.style.visibility = 'visible'
+    }
+
+    display(scrollX.dom, show && scrollX.show)
+    display(scrollY.dom, show && scrollY.show)
   }
 
   resetScroll() {
@@ -306,6 +334,7 @@ export class ScrollBar {
     let inner_offsetTop = (this.scrollTop / this.scrollHeight) * innerH
     this.scrollY.inner!.len = innerH
     this.scrollY.movedLen = inner_offsetTop
+
     setStyle(this.scrollY.inner!.dom, {
       height: innerH + 'px',
       top: inner_offsetTop + 'px'

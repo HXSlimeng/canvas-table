@@ -1,7 +1,6 @@
 import { dft } from "../default";
 import {
   anyObj,
-  IEventMapFun,
   ILTableInitOptions,
 } from "../index.d";
 import { addOn } from "../utils";
@@ -67,14 +66,17 @@ export class Table extends CanvasCtx {
 
   setEventListener() {
     const bodyWrapper = this.wrapper.bodyWrapper
+    const scrollBar = this.scrollBar
+    let scrollAct = timerShowScroll()
 
     const wheelEvent = (event: WheelEvent) => {
       const { deltaY } = event
       this.scrollBar.move('y', deltaY)
+      scrollAct()
     }
 
-    const mousemoveEvent = (event: MouseEvent) => {
 
+    const mousemoveEvent = (event: MouseEvent) => {
       {
         //行悬浮  active状态
         const { rows, cellH } = this.body
@@ -98,12 +100,33 @@ export class Table extends CanvasCtx {
         //重新绘制表头  防止 后绘制的row 覆盖
         this.header.render()
       }
+      scrollAct()
     }
 
     addOn(bodyWrapper, [
       ['wheel', wheelEvent],
-      ['mousemove', mousemoveEvent]
+      ['mousemove', mousemoveEvent],
     ])
+
+    function timerShowScroll() {
+      let timer: null | number = null
+      return function () {
+
+        if (timer) {
+          clearTimeout(timer)
+          timer = setTimeout(() => {
+            scrollBar.toogleScrollIfNeed(false)
+            timer = null
+          }, 3000);
+        } else {
+          scrollBar.toogleScrollIfNeed(true)
+          timer = setTimeout(() => {
+            scrollBar.toogleScrollIfNeed(false)
+            timer = null
+          }, 3000);
+        }
+      }
+    }
 
   }
 

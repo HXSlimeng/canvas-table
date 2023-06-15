@@ -57,3 +57,8 @@ export function dertf(params: number) {
   return params / RATIO
 }
 
+export function display(dom: HTMLElement, show: boolean) {
+  let action: 'remove' | 'add' = show ? 'remove' : 'add'
+  dom.classList[action]('hidden')
+}
+

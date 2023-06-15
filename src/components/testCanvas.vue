@@ -1,11 +1,10 @@
 <template>
-  <div style="display: flex; justify-content: center; width: 60vw; height: 60vh">
+  <div style="display: flex; justify-content: center">
     <canvas id="l-table"> </canvas>
   </div>
 </template>
 
 <script setup lang="ts">
-// import { onMounted } from "vue";
 import { onMounted, onUnmounted } from "vue";
 import { setUpTable } from "../core/index";
 import { anyObj } from "../core/index.d";
@@ -23,7 +22,8 @@ function setTable() {
     column: mockData,
     columnH: 50,
   });
-  let data = Array.from({ length: 100 }).map((_, y) => {
+
+  let data = Array.from({ length: 1000 }).map((_, y) => {
     let obj: anyObj = {};
     mockData.forEach(({ prop }, x) => {
       obj[prop] = `${x}-${y}`;

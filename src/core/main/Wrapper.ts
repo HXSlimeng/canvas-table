@@ -40,13 +40,11 @@ export class Wrapper {
         });
         addClass(bodyWrapper, "body-wrapper");
 
-
         const canvasDom = this.ctx.canvas
         canvasDom.after(container)
         canvasDom.remove()
         container.append(canvasDom)
         container.append(bodyWrapper)
-
 
         return [container, bodyWrapper]
     }

@@ -58,7 +58,7 @@ export class Cell {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = fontColor || dft.fontColor;
-    ctx.fillText(text, startX + width / 2, startY + height / 2, width);
+    ctx.fillText(text, startX + width / 2, startY + height / 2);
 
     ctx.restore();
   }
