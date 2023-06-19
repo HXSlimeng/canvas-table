@@ -1,4 +1,4 @@
-# Canvas-table
+# lmh-table
 
 > 大数据量表格数据渲染的解决方案
 >
@@ -7,6 +7,13 @@
 ### ScreenShot:
 
 ![Alt text](./src/assets/screenShot.png)
+
+#### Installation:
+
+```shell
+// yarn | pnpm
+npm install pinia
+```
 
 #### Usage:
 
@@ -27,7 +34,7 @@ let mockColumn = Array.from({ length: 9 }).map((_, i) => ({
 }));
 
 const tableInstance = setUpTable("#l-table", {
-  column: mockData,
+  column: mockColumn,
   columnH: 50,
 });
 ```
