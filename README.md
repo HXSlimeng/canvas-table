@@ -11,8 +11,7 @@
 #### Installation:
 
 ```shell
-// yarn | pnpm
-npm install pinia
+npm install lmh-table
 ```
 
 #### Usage:
