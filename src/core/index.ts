@@ -1,5 +1,5 @@
 import { Table } from "./main/LTable";
-import { ILTableInitOptions } from "./index.d";
+import { ILTableInitOptions } from "./table";
 import { getType } from "./utils";
 
 type IsetupTableMt = (dom: HTMLCanvasElement | string, options: ILTableInitOptions) => Table;
@@ -17,5 +17,4 @@ export const setUpTable: IsetupTableMt = (dom, options) => {
   } else {
     throw new Error("Init canvas dom error")
   }
-
 };

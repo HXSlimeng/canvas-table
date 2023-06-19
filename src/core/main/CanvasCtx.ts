@@ -1,5 +1,5 @@
 import { dft } from "../default";
-import { ILTableInitOptions } from "../index.d";
+import { ILTableInitOptions } from "../table";
 import { addClass, rtf } from "../utils";
 export class CanvasCtx {
   ctx: CanvasRenderingContext2D;
@@ -15,6 +15,7 @@ export class CanvasCtx {
     this.ctx = <CanvasRenderingContext2D>this.el.getContext("2d");
     addClass(this.el, 'canvas-root')
     this.setCanvasSize(size);
+
     // this.setSize()
   }
 

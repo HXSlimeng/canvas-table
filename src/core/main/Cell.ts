@@ -1,4 +1,4 @@
-import { ICellParams, ICellStyle } from "../index.d";
+import { ICellParams, ICellStyle } from "../table";
 import { dft } from "./../default";
 import { RATIO, rtf } from "../utils/index";
 
@@ -7,6 +7,7 @@ export class Cell {
   cellStyle: ICellStyle
   ctx: CanvasRenderingContext2D;
   active = false;
+  fitText: string | null = null
   private activeStyle = {
     bgColor: dft.actBgColor,
     fontColor: dft.actFtColor,
@@ -33,16 +34,42 @@ export class Cell {
       height: rtf(height || dft.cellH),
     };
   }
+  getFitText() {
+    const { ctx, drawParams: { width, text }, fitText } = this
+
+    if (fitText) return fitText
+
+    let textW = ctx.measureText(text).width
+
+    if (textW <= width) {
+      this.fitText = text
+      return text
+    } else {
+      let len = 0
+      let i = 0
+      let str = ''
+      let ellipsis = '...'
+      do {
+        i++
+        str = text.slice(0, i)
+        len = ctx.measureText(str + ellipsis).width
+      } while (len >= width);
+      this.fitText = str + ellipsis
+      return str
+    }
+  }
 
   render() {
-    const { startX, startY, text, height, width } = this.drawParams;
+    const { startX, startY, height, width } = this.drawParams;
     const { bgColor, fontColor, font } = this.active
       ? this.activeStyle
       : this.cellStyle;
 
     const { ctx } = this;
 
-    // this.clear();
+    const fitText = this.getFitText()
+
+
 
     ctx.save();
     //单元格边框
@@ -58,7 +85,7 @@ export class Cell {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillStyle = fontColor || dft.fontColor;
-    ctx.fillText(text, startX + width / 2, startY + height / 2);
+    ctx.fillText(fitText, startX + width / 2, startY + height / 2);
 
     ctx.restore();
   }

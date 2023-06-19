@@ -1,5 +1,4 @@
-import { IEventMapFun } from "../index.d";
-import { h, setStyle, addClass, addOn } from "../utils";
+import { h, setStyle, addClass } from "../utils";
 
 export class Wrapper {
     private ctx: CanvasRenderingContext2D
@@ -51,7 +50,7 @@ export class Wrapper {
 
 
     obSize(callback: Function) {
-        const resizeOb = new ResizeObserver((entries) => {
+        const resizeOb = new ResizeObserver(() => {
 
             callback()
 

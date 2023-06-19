@@ -1,5 +1,5 @@
 import { Cell } from ".";
-import { IColumnMap, ItableColumn, IheaderOption } from "../index.d";
+import { IColumnMap, ItableColumn, IheaderOption } from "../table";
 import { dft } from "../default";
 
 export class TableHeader {

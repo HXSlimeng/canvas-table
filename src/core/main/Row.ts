@@ -1,5 +1,5 @@
 import { Cell } from ".";
-import { anyObj } from "../index.d";
+import { anyObj } from "../table";
 
 export class Row {
     rowInfo: anyObj;

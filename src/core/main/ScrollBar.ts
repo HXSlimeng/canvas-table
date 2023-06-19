@@ -1,5 +1,4 @@
-import { addClass, addOn, display, off, on, rtf, setStyle } from "../utils/index";
-import "../../style.css";
+import { addClass, display, off, on, rtf, setStyle } from "../utils/index";
 import { h } from "../utils/render";
 import { dft } from "../default";
 

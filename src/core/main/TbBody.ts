@@ -1,5 +1,5 @@
 import { Cell } from ".";
-import { IColumnMap, IbodyOption, anyObj } from "../index.d";
+import { IColumnMap, IbodyOption, anyObj } from "../table";
 import { dft } from "../default";
 import { Row } from "./Row";
 

@@ -2,7 +2,7 @@ import { dft } from "../default";
 import {
   anyObj,
   ILTableInitOptions,
-} from "../index.d";
+} from "../table";
 import { addOn } from "../utils";
 import { CanvasCtx } from "./CanvasCtx";
 import { TableBody } from "./TbBody";
@@ -109,9 +109,8 @@ export class Table extends CanvasCtx {
     ])
 
     function timerShowScroll() {
-      let timer: null | number = null
+      let timer: null | NodeJS.Timer = null
       return function () {
-
         if (timer) {
           clearTimeout(timer)
           timer = setTimeout(() => {
