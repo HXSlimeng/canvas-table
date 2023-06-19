@@ -1,6 +1,7 @@
 import { Cell } from ".";
 import { IColumnMap, ItableColumn, IheaderOption } from "../table";
 import { dft } from "../default";
+import { dertf, rtf } from "../utils";
 
 export class TableHeader {
     columnMap: IColumnMap = new Map();

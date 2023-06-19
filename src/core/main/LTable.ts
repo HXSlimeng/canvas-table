@@ -16,7 +16,7 @@ export class Table extends CanvasCtx {
   scrollBar: ScrollBar;
   wrapper: Wrapper
 
-  constructor(dom: HTMLCanvasElement, options: ILTableInitOptions) {
+  constructor(dom: HTMLElement, options: ILTableInitOptions) {
     super(dom, options.size);
 
     const { column, columnH } = options;
@@ -33,12 +33,12 @@ export class Table extends CanvasCtx {
     //setup时 先绘制已经确定的表头
     this.header.render();
 
-    // this.wrapper.obSize(() => {
-    //   this.setSize()
-    //   this.scrollBar.resize()
-    //   this.body.render()
-    //   this.header.render()
-    // })
+    this.wrapper.obSize(() => {
+      this.setCanvasSize()
+      this.scrollBar.resize()
+      this.body.render()
+      this.header.fixPosition(this.scrollBar.scrollTop)
+    })
 
     this.setEventListener()
     // this.autoScroll()
@@ -70,6 +70,7 @@ export class Table extends CanvasCtx {
     let scrollAct = timerShowScroll()
 
     const wheelEvent = (event: WheelEvent) => {
+      event.preventDefault()
       const { deltaY } = event
       this.scrollBar.move('y', deltaY)
       scrollAct()

@@ -18,18 +18,10 @@ export class Wrapper {
     }
     mount() {
         const { width: canvasW, height: canvasH } = this.ctx.canvas.getBoundingClientRect()
-        //set canvas wrapper
-        const container = h("div");
-        setStyle(container, {
-            width: canvasW + "px",
-            height: canvasH + "px",
-            // width: '100%',
-            // height: '100%',
-            position: "relative",
-        });
-        addClass(container, "canvas-container");
 
         //set body wrapper
+        let container = this.ctx.canvas.parentElement!
+
         const bodyWrapper = h("div");
         setStyle(bodyWrapper, {
             position: "absolute",
@@ -40,10 +32,8 @@ export class Wrapper {
         addClass(bodyWrapper, "body-wrapper");
 
         const canvasDom = this.ctx.canvas
-        canvasDom.after(container)
-        canvasDom.remove()
-        container.append(canvasDom)
-        container.append(bodyWrapper)
+        canvasDom.after(canvasDom)
+        canvasDom.after(bodyWrapper)
 
         return [container, bodyWrapper]
     }
@@ -51,7 +41,6 @@ export class Wrapper {
 
     obSize(callback: Function) {
         const resizeOb = new ResizeObserver(() => {
-
             callback()
 
             const { width: canvasW, height: canvasH } = this.ctx.canvas.getBoundingClientRect()
@@ -61,6 +50,7 @@ export class Wrapper {
             })
 
         })
+
         resizeOb.observe(this.container)
 
 

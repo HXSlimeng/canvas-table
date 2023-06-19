@@ -7,7 +7,7 @@ export interface IScroll {
   len: number;
   movedLen: number;
   show: boolean
-  inner?: {
+  inner: {
     dom: HTMLElement;
     len: number;
   };
@@ -60,51 +60,69 @@ export class ScrollBar {
   }
 
   mount() {
-    const { headerH, canvasH, canvasW } = this;
     const canvasDom = this.ctx.canvas
 
-    //vertical Scroll
     let verticalScroll = h("div");
-    let verticalTotalLen = canvasH - dft.scrollW - headerH;
-
-    setStyle(verticalScroll, {
-      height: canvasH - dft.scrollW - headerH + "px",
-      width: `${dft.scrollW}px`,
-      background: dft.scrollBg,
-      top: headerH.toString() + "px",
-      visibility: 'hidden'
-    });
-
-    addClass(verticalScroll, "scrollRight", "scroll", 'hidden');
-    let scrollY = {
-      dom: verticalScroll,
-      len: verticalTotalLen,
-      movedLen: 0,
-      show: false
-    };
-
-    //horizon Scroll
     let horizonScroll = h("div");
-    let horizonTotalLen = canvasW - dft.scrollW;
+    let scrollY, scrollX
 
-    setStyle(horizonScroll, {
-      height: `${dft.scrollW}px`,
-      width: horizonTotalLen + "px",
-      background: dft.scrollBg,
-      visibility: 'hidden'
-    });
-    addClass(horizonScroll, "scrollBottom", "scroll", 'hidden');
-    let scrollX = {
-      dom: horizonScroll,
-      len: horizonTotalLen,
-      movedLen: 0,
-      show: false
-    };
+    //vertical Scroll
+    {
+      let inner = h("div");
+      addClass(inner, "scrollY_inner");
+      verticalScroll.appendChild(inner);
+      this.addDragListener('y', inner)
+
+      setStyle(verticalScroll, {
+        width: `${dft.scrollW}px`,
+        background: dft.scrollBg,
+        visibility: 'hidden',
+        top: this.headerH + 'px',
+      });
+
+      addClass(verticalScroll, "scrollRight", "scroll", 'hidden');
+      scrollY = {
+        dom: verticalScroll,
+        len: 0,
+        movedLen: 0,
+        show: false,
+        inner: {
+          dom: inner,
+          len: 0
+        }
+      };
+
+    }
+    //horizon Scroll
+    {
+      let inner = h('div')
+      addClass(inner, 'scrollX_inner')
+
+      horizonScroll.appendChild(inner)
+      this.addDragListener('x', inner)
+
+      setStyle(horizonScroll, {
+        height: `${dft.scrollW}px`,
+        background: dft.scrollBg,
+        visibility: 'hidden',
+        left: `0px`
+      });
+      addClass(horizonScroll, "scrollBottom", "scroll", 'hidden');
+      scrollX = {
+        dom: horizonScroll,
+        len: 0,
+        movedLen: 0,
+        show: false,
+        inner: {
+          dom: inner,
+          len: 0
+        }
+      };
+    }
 
     canvasDom.after(verticalScroll);
     canvasDom.after(horizonScroll);
     [verticalScroll, horizonScroll].forEach(dom => {
-
       on(dom, 'transitionend', () => {
         const opacity = getComputedStyle(dom).opacity
         if (opacity === '0') {
@@ -126,78 +144,16 @@ export class ScrollBar {
 
   set scrollWidth(val: number) {
     this.info.scrollWidth = val
-
-    let inner: HTMLElement
-    let realBodyW = this.canvasW
-    let innerW = realBodyW / val * (realBodyW - dft.scrollW)
-
-    if (this.scrollX.inner) {
-      inner = this.scrollX.dom
-    } else {
-      inner = h('div')
-      addClass(inner, 'scrollX_inner')
-      this.scrollX.inner = {
-        dom: inner,
-        len: innerW
-      }
-      this.scrollX.dom.appendChild(inner)
-      this.addDragListener('x', inner)
-    }
-
-    setStyle(inner, {
-      width: innerW + 'px',
-      left: '0px',
-    })
-
-    this.scrollX.show = val > realBodyW
+    this.setScrollRect('x')
   }
 
   get scrollWidth() {
     return this.info.scrollWidth
   }
 
-
   set scrollHeight(val: number) {
-    let inner: HTMLElement
-
-    let realBodyH = this.canvasH - this.headerH;
-    let innerH = (realBodyH / val) * (realBodyH - dft.scrollW);
-
     this.info.scrollHeight = val;
-
-    if (this.scrollY.inner) {
-      inner = this.scrollY.inner.dom
-    } else {
-      inner = h("div");
-      addClass(inner, "scrollY_inner");
-      this.scrollY.inner = {
-        dom: inner,
-        len: innerH,
-      };
-      this.scrollY.dom.appendChild(inner);
-      this.addDragListener('y', inner)
-    }
-
-    setStyle(inner, {
-      top: "0px",
-      height: innerH + "px",
-    });
-
-    let showScrollY = val > this.bodyHeight;
-
-    this.scrollY.show = showScrollY
-    // this.showScrollY = showScrollY;
-
-    // if (showScrollY) {
-
-    //   let bodyWrapper = this.canvasWrapper!.querySelector(".body-wrapper");
-
-    //   let wheelEvt = (event: WheelEvent) => {
-    //     const { deltaY } = event;
-    //     this.move(0, deltaY);
-    //   };
-    //   addOn(bodyWrapper as HTMLElement, [["wheel", wheelEvt]]);
-    // }
+    this.setScrollRect('y')
   }
 
   get scrollHeight() {
@@ -238,6 +194,49 @@ export class ScrollBar {
 
   get scrollLeft() {
     return this.info.scrollLeft;
+  }
+  setScrollRect(type: 'x' | 'y') {
+    const { scrollHeight, scrollWidth } = this
+    if (type === 'y') {
+      const scroll = this.scrollY
+      const inner = scroll.inner
+      const total = this.info.scrollHeight
+      let realBodyH = this.bodyHeight;
+
+      let scrollLen = realBodyH - dft.scrollW
+      let innerH = (realBodyH / total) * scrollLen;
+
+      inner.len = innerH
+      this.scrollY.len = scrollLen
+
+      setStyle(inner.dom, {
+        height: innerH + "px",
+      });
+      setStyle(scroll.dom, {
+        height: scrollLen + 'px'
+      })
+      scroll.show = scrollHeight > realBodyH
+
+    } else {
+      const scroll = this.scrollX
+      const inner = scroll.inner
+      const total = this.info.scrollWidth
+      let realBodyW = this.canvasW;
+
+      let scrollLen = realBodyW - dft.scrollW
+      let innerH = (realBodyW / total) * scrollLen;
+
+      inner.len = innerH
+      this.scrollX.len = scrollLen
+
+      setStyle(inner.dom, {
+        width: innerH + "px",
+      });
+      setStyle(scroll.dom, {
+        width: scrollLen + 'px'
+      })
+      scroll.show = scrollWidth > realBodyW
+    }
   }
 
   move(type: 'x' | 'y', val: number) {
@@ -320,24 +319,29 @@ export class ScrollBar {
     const { width: canvasW, height: canvasH } = this.ctx.canvas.getBoundingClientRect()
     this.canvasH = canvasH
     this.canvasW = canvasW
+    this.setScrollRect('x')
+    this.setScrollRect('y')
+    // {
+    //   this.scrollY.len = canvasH - this.headerH
 
-    setStyle(this.scrollY.dom, {
-      height: this.bodyHeight + 'px'
-    })
+    //   setStyle(this.scrollY.dom, {
+    //     height: this.bodyHeight + 'px'
+    //   })
 
-    let innerH = (this.bodyHeight / this.scrollHeight) * this.bodyHeight
 
-    const { scrollTop, scrollHeight } = this
-    console.log({ innerH, scrollHeight, scrollTop });
+    //   let innerH = (this.bodyHeight / this.scrollHeight) * this.scrollY.len
 
-    let inner_offsetTop = (this.scrollTop / this.scrollHeight) * innerH
-    this.scrollY.inner!.len = innerH
-    this.scrollY.movedLen = inner_offsetTop
+    //   let inner_offsetTop = (this.scrollTop / this.scrollHeight) * this.scrollY.len
 
-    setStyle(this.scrollY.inner!.dom, {
-      height: innerH + 'px',
-      top: inner_offsetTop + 'px'
-    })
+    //   this.scrollY.inner!.len = innerH
+    //   this.scrollY.movedLen = inner_offsetTop
+
+    //   setStyle(this.scrollY.inner!.dom, {
+    //     height: innerH + 'px',
+    //     top: inner_offsetTop + 'px'
+    //   })
+    // }
+    // this.scrollY.show = this.scrollHeight > this.bodyHeight
 
   }
 }

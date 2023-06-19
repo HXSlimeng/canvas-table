@@ -5,18 +5,18 @@ import { getType } from './core/utils';
 
 import '../style.css'
 
-type IsetupTableMt = (dom: HTMLCanvasElement | string, options: ILTableInitOptions) => Table;
+type IsetupTableMt = (dom: HTMLElement | string, options: ILTableInitOptions) => Table;
 
 export const setUpTable: IsetupTableMt = (dom, options) => {
-    let canvasCtx
+    let root
     if (getType(dom) === "string") {
-        canvasCtx = document.querySelector(<string>dom);
+        root = document.querySelector(<string>dom);
     } else {
-        canvasCtx = dom;
+        root = dom;
     }
 
-    if (canvasCtx instanceof HTMLCanvasElement) {
-        return new Table(canvasCtx, options);
+    if (root instanceof HTMLElement) {
+        return new Table(root, options);
     } else {
         throw new Error("Init canvas dom error")
     }
