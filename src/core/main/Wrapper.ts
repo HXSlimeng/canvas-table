@@ -48,18 +48,8 @@ export class Wrapper {
                 height: canvasH - this.headerH + "px",
                 width: canvasW + 'px'
             })
-
         })
 
         resizeOb.observe(this.container)
-
-
-        // const wheelEvent = (event: WheelEvent | MouseEvent) => {
-        //     this.emit('wheel', event)
-        // }
-        // addOn(this.bodyWrapper, [
-        //     ['wheel', this.emit()],
-        //     ['mouseover',]
-        // ])
     }
 }

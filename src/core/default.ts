@@ -1,6 +1,4 @@
 export const dft = {
-  w: 800,
-  h: 500,
   cellW: 100,
   cellH: 40,
   strokeStyle: "rgba(84, 84, 84,.54)",

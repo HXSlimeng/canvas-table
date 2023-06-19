@@ -67,7 +67,7 @@ export class Table extends CanvasCtx {
   setEventListener() {
     const bodyWrapper = this.wrapper.bodyWrapper
     const scrollBar = this.scrollBar
-    let scrollAct = timerShowScroll()
+    let scrollAct = scrollBar.scrollAct
 
     const wheelEvent = (event: WheelEvent) => {
       event.preventDefault()
@@ -75,7 +75,6 @@ export class Table extends CanvasCtx {
       this.scrollBar.move('y', deltaY)
       scrollAct()
     }
-
 
     const mousemoveEvent = (event: MouseEvent) => {
       {
@@ -109,29 +108,7 @@ export class Table extends CanvasCtx {
       ['mousemove', mousemoveEvent],
     ])
 
-    function timerShowScroll() {
-      let timer: null | NodeJS.Timer = null
-      return function () {
-        if (timer) {
-          clearTimeout(timer)
-          timer = setTimeout(() => {
-            scrollBar.toogleScrollIfNeed(false)
-            timer = null
-          }, 3000);
-        } else {
-          scrollBar.toogleScrollIfNeed(true)
-          timer = setTimeout(() => {
-            scrollBar.toogleScrollIfNeed(false)
-            timer = null
-          }, 3000);
-        }
-      }
-    }
-
   }
-
-
-
 }
 
 

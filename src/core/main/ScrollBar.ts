@@ -27,6 +27,7 @@ export class ScrollBar {
     scrollWidth: 0,
     scrollHeight: 0,
   };
+  scrollAct: Function
 
   private canvasW: number;
   private canvasH: number;
@@ -49,6 +50,8 @@ export class ScrollBar {
 
     this.scrollX = scrollX;
     this.scrollY = scrollY;
+
+    this.scrollAct = this.timerShowScroll()
   }
 
   get bodyHeight() {
@@ -240,6 +243,7 @@ export class ScrollBar {
   }
 
   move(type: 'x' | 'y', val: number) {
+    this.scrollAct()
     if (type === 'y') {
       let moveY = this.scrollTop + val;
       let max = this.scrollHeight - this.bodyHeight;
@@ -321,27 +325,24 @@ export class ScrollBar {
     this.canvasW = canvasW
     this.setScrollRect('x')
     this.setScrollRect('y')
-    // {
-    //   this.scrollY.len = canvasH - this.headerH
-
-    //   setStyle(this.scrollY.dom, {
-    //     height: this.bodyHeight + 'px'
-    //   })
-
-
-    //   let innerH = (this.bodyHeight / this.scrollHeight) * this.scrollY.len
-
-    //   let inner_offsetTop = (this.scrollTop / this.scrollHeight) * this.scrollY.len
-
-    //   this.scrollY.inner!.len = innerH
-    //   this.scrollY.movedLen = inner_offsetTop
-
-    //   setStyle(this.scrollY.inner!.dom, {
-    //     height: innerH + 'px',
-    //     top: inner_offsetTop + 'px'
-    //   })
-    // }
-    // this.scrollY.show = this.scrollHeight > this.bodyHeight
-
+  }
+  private timerShowScroll() {
+    let timer: null | NodeJS.Timer = null
+    let scrollBar = this
+    return function () {
+      if (timer) {
+        clearTimeout(timer)
+        timer = setTimeout(() => {
+          scrollBar.toogleScrollIfNeed(false)
+          timer = null
+        }, 3000);
+      } else {
+        scrollBar.toogleScrollIfNeed(true)
+        timer = setTimeout(() => {
+          scrollBar.toogleScrollIfNeed(false)
+          timer = null
+        }, 3000);
+      }
+    }
   }
 }
