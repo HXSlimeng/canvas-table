@@ -16,10 +16,10 @@ npm install lmh-table
 
 #### Usage:
 
-1、你需要自行创建一个 canvas 节点
+1、你需要创建一个宿主节点
 
 ```html
-<canvas id="l-table"></canvas>
+<div id="l-table"></div>
 ```
 
 2、定义表头
@@ -51,3 +51,32 @@ let data = Array.from({ length: 100 }).map((_, y) => {
 
 tbInstance.data = data;
 ```
+
+#### Configration：
+
+1. `setupTable`
+
+   Parameters:
+
+   - `dom`: 宿主dom或者宿主id / class, Type：HTMLElement | string
+   - `options`
+
+   | 名称             | 类型           | 说明         |
+   | ---------------- | -------------- | ------------ |
+   | column           | ItableColumn[] | 表头配置     |
+   | columnH          | number         | 表头高度     |
+   | headerBackground | stirng         | 表头背景颜色 |
+
+   - `options.column` 
+   
+     ItableColumn
+   
+   | 名称  | 类型   | 说明   |
+   | ----- | ------ | ------ |
+   | title | string | 标题   |
+   | prop  | string | 标识   |
+   | width | number | 列宽度 |
+   
+   
+
+

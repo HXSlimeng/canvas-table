@@ -7,7 +7,7 @@ import '../style.css'
 
 type IsetupTableMt = (dom: HTMLElement | string, options: ILTableInitOptions) => Table;
 
-export const setUpTable: IsetupTableMt = (dom, options) => {
+export const setupTable: IsetupTableMt = (dom, options) => {
     let root
     if (getType(dom) === "string") {
         root = document.querySelector(<string>dom);
