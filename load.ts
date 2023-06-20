@@ -6,13 +6,16 @@ let mockData = Array.from({ length: 12 }).map((_, i) => ({
     prop: `col${i}`,
 }));
 const tbInstance = setupTable("#l-table", {
-    column: mockData,
+    columns: mockData,
     columnH: 50,
+    selectable: true
 });
 let data = Array.from({ length: 1000 }).map((_, y) => {
     let obj: anyObj = {};
     mockData.forEach(({ prop }, x) => {
-        obj[prop] = `${x}-${y}`;
+        if (prop !== 'selected') {
+            obj[prop] = `${x}-${y}`;
+        }
     });
     return obj;
 });

@@ -1,7 +1,9 @@
+export type ICellContent = string | SVGAElement | HTMLImageElement
 export interface ItableColumn {
   title: string;
   prop: string;
   width?: number;
+  render?: (val: any, index: number) => ICellContent
 }
 
 export interface ILTableInitOptions {
@@ -9,9 +11,10 @@ export interface ILTableInitOptions {
     width: number;
     height: number;
   };
-  column: ItableColumn[];
+  columns: ItableColumn[];
   columnH?: number;
   headerBackGround?: string;
+  selectable?: boolean
 }
 
 export interface ICellParams {
@@ -25,7 +28,7 @@ export interface ICellParams {
   startY: number;
   width?: number;
   height?: number;
-  text: string;
+  content: ICellContent;
 }
 
 export interface ICellStyle {
@@ -40,7 +43,9 @@ export type IColumnMap = Map<
     width: number;
     startX: number;
     iX: number;
+    render?: (val: any, index: number) => ICellContent
   }
+
 >;
 
 export type tableBaseOption = {
@@ -48,7 +53,7 @@ export type tableBaseOption = {
   cellW?: number;
 };
 
-export type IheaderOption = tableBaseOption & {};
+export type IheaderOption = tableBaseOption & { columns: ItableColumn[], selectable: boolean | undefined };
 export type IbodyOption = tableBaseOption & {
   colH: number;
 };

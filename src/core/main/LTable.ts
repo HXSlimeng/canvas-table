@@ -14,22 +14,23 @@ export class Table extends CanvasCtx {
   header: TableHeader;
   body: TableBody;
   scrollBar: ScrollBar;
-  wrapper: Wrapper
+  wrapper: Wrapper;
 
   constructor(dom: HTMLElement, options: ILTableInitOptions) {
     super(dom, options.size);
 
-    const { column, columnH } = options;
+    const { columns, columnH, selectable } = options;
 
     const { cellH: dftH } = dft;
 
     let colH = columnH || dftH;
 
-    this.header = new TableHeader(this.ctx, column, { cellH: colH });
+    this.header = new TableHeader(this.ctx, { columns, cellH: colH, selectable });
     this.body = new TableBody(this.ctx, this.header.columnMap, { colH });
     this.wrapper = new Wrapper(this.ctx, colH)
     this.scrollBar = new ScrollBar(this.ctx, colH, () => this.afterScroll());
     this.scrollBar.scrollWidth = this.header.width
+
     //setup时 先绘制已经确定的表头
     this.header.render();
 
@@ -107,7 +108,6 @@ export class Table extends CanvasCtx {
       ['wheel', wheelEvent],
       ['mousemove', mousemoveEvent],
     ])
-
   }
 }
 

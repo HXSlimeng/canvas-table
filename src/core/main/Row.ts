@@ -1,4 +1,5 @@
 import { Cell } from ".";
+import { SignStr } from "../enum/default";
 import { anyObj } from "../table";
 
 export class Row {
@@ -29,5 +30,18 @@ export class Row {
     }
     get active(): boolean {
         return this.rowActive;
+    }
+
+    set selected(val: boolean) {
+        this.rowInfo[SignStr.SELECTABLE] = val
+        let target = this.cells.find(cell => cell.key == 'select')
+        if (target) {
+            target.value = val
+            target.render()
+        }
+    }
+
+    get selected() {
+        return this.rowInfo[SignStr.SELECTABLE]
     }
 }

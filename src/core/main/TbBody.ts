@@ -2,6 +2,7 @@ import { Cell } from ".";
 import { IColumnMap, IbodyOption, anyObj } from "../table";
 import { dft } from "../default";
 import { Row } from "./Row";
+import { SignStr } from "../enum/default";
 
 export class TableBody {
     ctx: CanvasRenderingContext2D;
@@ -15,6 +16,7 @@ export class TableBody {
         bgColor: dft.bgColor,
         fontColor: dft.fontColor,
     };
+
     constructor(
         ctx: CanvasRenderingContext2D,
         colMap: IColumnMap,
@@ -22,25 +24,31 @@ export class TableBody {
     ) {
         this.ctx = ctx;
         this.colMap = colMap;
-        this.cellH = option?.cellH || dft.cellH;
+        this.cellH = option.cellH || dft.cellH;
         this.headerH = option.colH;
-        // setStyle(this.ctx.canvas, { 'zIndex': '20', position: 'relative' })
     }
 
     setData(data: anyObj[]) {
         this.rows = []
+        let selectable = this.colMap.has(SignStr.SELECTABLE)
+
         data.forEach((row, y) => {
             let rowItem: Cell[] = [];
+
+            if (selectable) {
+                row[SignStr.SELECTABLE] = false
+            }
+
             Object.entries(row).forEach(([key, val]) => {
                 const col = this.colMap.get(key);
 
                 if (col) {
-                    const { startX, width, iX } = col;
+                    const { startX, width, iX, render } = col;
 
                     let rectParmas = {
                         iX,
                         iY: y,
-                        text: val,
+                        content: val,
                         startX,
                         startY: this.headerH + y * this.cellH,
                         width,
@@ -48,7 +56,7 @@ export class TableBody {
                     };
 
                     // this.cells
-                    rowItem.push(new Cell(this.ctx, rectParmas, this.style));
+                    rowItem.push(new Cell(this.ctx, rectParmas, [key, val], this.style, render));
                 }
             });
             this.rows.push(new Row(rowItem, row));

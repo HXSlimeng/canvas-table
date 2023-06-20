@@ -1,41 +1,67 @@
-import { ICellParams, ICellStyle } from "../table";
+import { ICellContent, ICellParams, ICellStyle } from "../table";
 import { dft } from "./../default";
-import { RATIO, rtf } from "../utils/index";
+import { RATIO, dertf, getType, rtf } from "../utils/index";
+import { restoreCtx } from "../descriptor";
 
+type cellInfo = [string, number | string]
 export class Cell {
   rectParams: ICellParams;
-  cellStyle: ICellStyle
+  defaultStyle: ICellStyle
   ctx: CanvasRenderingContext2D;
   active = false;
   fitText: string | null = null
+  private cellInfo: cellInfo
   private activeStyle = {
     bgColor: dft.actBgColor,
     fontColor: dft.actFtColor,
     font: ''
   };
+  private contentRender?: (val: any, index: number) => ICellContent
 
   constructor(
     ctx: CanvasRenderingContext2D,
     rectParams: ICellParams,
-    cellStyle?: ICellStyle
+    info: [string, number | string],
+    cellStyle?: ICellStyle,
+    contentRender?: (val: any, index: number) => ICellContent
   ) {
     this.rectParams = rectParams;
-    this.cellStyle = cellStyle || { fontColor: dft.fontColor, bgColor: dft.bgColor };
+    this.defaultStyle = cellStyle || { fontColor: dft.fontColor, bgColor: dft.bgColor };
     this.ctx = ctx;
+    this.cellInfo = info;
+    this.contentRender = contentRender
   }
 
   get drawParams() {
-    const { startX, startY, width, height, text } = this.rectParams;
+    const { startX, startY, width, height, content } = this.rectParams;
     return {
-      text,
+      content,
       startX: rtf(startX),
       startY: rtf(startY),
       width: rtf(width || dft.cellW),
       height: rtf(height || dft.cellH),
     };
   }
-  getFitText() {
-    const { ctx, drawParams: { width, text }, fitText } = this
+
+  get cellStyle() {
+    return this.active ? this.activeStyle : this.defaultStyle;
+  }
+
+  get key() {
+    return this.cellInfo[0]
+  }
+
+  get value() {
+    return this.cellInfo[1]
+  }
+
+  set value(val: any) {
+    this.cellInfo[1] = val
+    this.rectParams.content = val
+  }
+
+  getFitText(text: string) {
+    const { ctx, drawParams: { width }, fitText } = this
 
     if (fitText) return fitText
 
@@ -60,34 +86,59 @@ export class Cell {
   }
 
   render() {
+    this.drawBorder()
+    this.drawContent()
+  }
+
+  @restoreCtx
+  drawBorder() {
+    const { ctx } = this
     const { startX, startY, height, width } = this.drawParams;
-    const { bgColor, fontColor, font } = this.active
-      ? this.activeStyle
-      : this.cellStyle;
-
-    const { ctx } = this;
-
-    const fitText = this.getFitText()
-
-
-
-    ctx.save();
+    const { bgColor } = this.cellStyle
     //单元格边框
     ctx.fillStyle = bgColor || dft.bgColor;
     ctx.strokeStyle = dft.borderColor;
     ctx.strokeRect(startX, startY, width, height);
     ctx.fillRect(startX, startY, width, height);
+  }
 
-    // ctx.globalCompositeOperation = 'destination-over'
 
-    //单元格文本
-    ctx.font = `${font || ''} ${RATIO}rem sans-serif`;
-    ctx.textAlign = "center";
-    ctx.textBaseline = "middle";
-    ctx.fillStyle = fontColor || dft.fontColor;
-    ctx.fillText(fitText, startX + width / 2, startY + height / 2);
+  drawContent() {
+    const { content } = this.drawParams
 
-    ctx.restore();
+    if (this.contentRender) {
+      const { iY } = this.rectParams
+      this.drawItem(this.contentRender(this.value, iY))
+    } else if (Array.isArray(content)) {
+      content.forEach(item => this.drawItem(item))
+    } else {
+      this.drawItem(content)
+    }
+    // ctx.fillText(fitText, startX, startY);
+  }
+  @restoreCtx
+  drawItem(content: ICellParams['content'] | ICellParams['content'][]) {
+    const { ctx } = this
+    const { startX, startY, width, height } = this.drawParams
+
+    if (getType(content) === 'string') {
+      const { fontColor, font } = this.cellStyle
+      const fitText = this.getFitText(content as string)
+      ctx.font = `${font || ''} ${RATIO}rem sans-serif`;
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = fontColor || dft.fontColor;
+      ctx.fillText(fitText, startX + width / 2, startY + height / 2);
+
+    } else if (content instanceof HTMLImageElement) {
+      if (!content.complete) {
+        content.addEventListener('load', () => {
+          ctx.drawImage(content, startX + width / 2 - dertf(content.width), startY + height / 2 - dertf(content.height))
+        })
+      } else {
+        ctx.drawImage(content, startX + width / 2 - dertf(content.width), startY + height / 2 - dertf(content.height))
+      }
+    }
   }
 
   clear() {
