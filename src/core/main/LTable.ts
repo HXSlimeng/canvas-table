@@ -3,21 +3,22 @@ import {
   anyObj,
   ILTableInitOptions,
 } from "../table";
-import { addOn } from "../utils";
+import { addOn, dertf } from "../utils";
 import { CanvasCtx } from "./CanvasCtx";
 import { TableBody } from "./TbBody";
 import { TableHeader } from "./TbHeader";
 import { Wrapper } from "./Wrapper";
-import { ScrollBar } from "./index";
+import { Cell, ScrollBar } from "./index";
 
 export class Table extends CanvasCtx {
   header: TableHeader;
   body: TableBody;
   scrollBar: ScrollBar;
   wrapper: Wrapper;
+  preActiveCell: Cell | null = null
 
   constructor(dom: HTMLElement, options: ILTableInitOptions) {
-    super(dom, options.size);
+    super(dom);
 
     const { columns, columnH, selectable } = options;
 
@@ -78,28 +79,45 @@ export class Table extends CanvasCtx {
     }
 
     const mousemoveEvent = (event: MouseEvent) => {
-      {
-        //行悬浮  active状态
-        const { rows, cellH } = this.body
+      //行悬浮  active状态
+      const { rows, cellH } = this.body
 
-        const { offsetY } = event;
-        let { scrollTop } = this.scrollBar
+      const { offsetY, offsetX } = event;
 
-        let preAct = rows.find((v) => v.active);
 
-        let activeIndex = (offsetY + scrollTop) / cellH;
+      let { scrollTop } = this.scrollBar
+      let preAct = rows.find((v) => v.active);
 
-        let finIndex = parseInt(activeIndex.toString());
-
-        if (preAct === rows[finIndex]) return;
-
+      //active
+      let finIndex = parseInt(((offsetY + scrollTop) / cellH).toString());
+      if (preAct !== rows[finIndex]) {
         if (preAct) preAct.active = false;
-
         if (!rows[finIndex].active)
           rows[finIndex].active = true;
-
         //重新绘制表头  防止 后绘制的row 覆盖
         this.header.render()
+      };
+
+      let activeRow = rows[finIndex]
+
+      //锁定悬浮cell
+      let activeCell = activeRow.cells.find(cell => {
+        const { startX, width } = cell.drawParams
+        return offsetX <= dertf(startX) + dertf(width) && offsetX > dertf(startX)
+      })
+
+      if (activeCell) {
+        if (this.preActiveCell?.tag !== activeCell.tag) {
+          this.preActiveCell && (this.preActiveCell.hovering = false)
+          this.preActiveCell = activeCell
+          this.preActiveCell.eventInfo = null
+          activeCell.hovering = true
+        }
+        //update event Info 
+        activeCell.eventInfo = {
+          point: { offsetX, offsetY: offsetY + scrollTop },
+          currentRow: activeRow
+        }
       }
       scrollAct()
     }

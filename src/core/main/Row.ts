@@ -34,10 +34,11 @@ export class Row {
 
     set selected(val: boolean) {
         this.rowInfo[SignStr.SELECTABLE] = val
-        let target = this.cells.find(cell => cell.key == 'select')
+        let target = this.cells.find(cell => cell.props == 'selected')
+
         if (target) {
             target.value = val
-            target.render()
+            this.render()
         }
     }
 

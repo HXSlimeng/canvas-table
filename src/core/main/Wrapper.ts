@@ -49,7 +49,6 @@ export class Wrapper {
                 width: canvasW + 'px'
             })
         })
-
         resizeOb.observe(this.container)
     }
 }

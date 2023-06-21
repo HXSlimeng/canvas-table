@@ -62,3 +62,13 @@ export function display(dom: HTMLElement, show: boolean) {
   dom.classList[action]('hidden')
 }
 
+export function isPointInRectRange(point: [number, number], rangeRect: [number, number, number, number]) {
+  const [x, y] = point
+  const [startX, startY, width, height] = rangeRect
+
+  let xInRange = startX < x && startX + width > x
+  let yInRange = startY < y && startY + height > y
+  return yInRange && xInRange
+
+}
+

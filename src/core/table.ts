@@ -1,16 +1,25 @@
+import { Row } from "./main/Row";
+
 export type ICellContent = string | SVGAElement | HTMLImageElement
+
+export type IRenderContent = {
+  renderFun: (val: any, index: number) => ICellContent,
+  event?: [keyof HTMLElementEventMap, (row: Row) => void][],
+  size: {
+    width: number,
+    height: number
+  }
+}
+
 export interface ItableColumn {
   title: string;
   prop: string;
   width?: number;
-  render?: (val: any, index: number) => ICellContent
+  render?: IRenderContent[]
 }
 
 export interface ILTableInitOptions {
-  size?: {
-    width: number;
-    height: number;
-  };
+
   columns: ItableColumn[];
   columnH?: number;
   headerBackGround?: string;
@@ -43,9 +52,8 @@ export type IColumnMap = Map<
     width: number;
     startX: number;
     iX: number;
-    render?: (val: any, index: number) => ICellContent
+    render?: IRenderContent[]
   }
-
 >;
 
 export type tableBaseOption = {

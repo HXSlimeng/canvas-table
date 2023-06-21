@@ -8,11 +8,9 @@ export class CanvasCtx {
     height: 0,
     width: 0,
   };
-  size: ILTableInitOptions["size"]
 
-  constructor(dom: HTMLElement, size: ILTableInitOptions["size"]) {
+  constructor(dom: HTMLElement) {
     this.root = dom;
-    this.size = size
 
     let canvasDom = document.createElement('canvas')
     this.ctx = canvasDom.getContext("2d")!;
@@ -26,13 +24,13 @@ export class CanvasCtx {
 
   setCanvasSize() {
     let { f, e } = this.ctx.getTransform()
-    const { canvasEl, root, size } = this;
+    const { canvasEl, root } = this;
     const { width, height } = root.getBoundingClientRect()
 
 
     let cfgW: number, cfgH: number;
-    this.style.width = cfgW = size?.width || width;
-    this.style.height = cfgH = size?.height || height;
+    this.style.width = cfgW = width;
+    this.style.height = cfgH = height;
 
     canvasEl.width = rtf(cfgW)
     canvasEl.height = rtf(cfgH)

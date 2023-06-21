@@ -30,24 +30,7 @@ export class TableHeader {
             check.src = '/src/icons/check.svg'
             let uncheck = document.createElement('img')
             uncheck.src = '/src/icons/unCheck.svg'
-            //     uncheck.onload = () => {
-            // let check = new Promise((resolve, reject) => {
-            //     let check = document.createElement('img')
-            //     check.src = '/src/icons/check.svg'
-            //     check.onload = () => {
-            //         resolve(check)
-            //     }
-            // })
-            // let uncheck = new Promise((resolve, reject) => {
-            //     let uncheck = document.createElement('img')
-            //     uncheck.src = '/src/icons/unCheck.svg'
-            //     uncheck.onload = () => {
-            //         resolve(uncheck)
-            //     }
-            // })
-            // Promise.all([check, uncheck]).then(([check, uncheck]) => {
 
-            // })
             if (selectable) {
                 let contentRender = (val: boolean, i: number) => {
                     let dom = val ? check : uncheck
@@ -57,7 +40,24 @@ export class TableHeader {
                     title: '选择',
                     prop: SignStr.SELECTABLE,
                     width: DftSize.SELECT_CELL_W,
-                    render: contentRender
+                    render: [
+                        {
+                            renderFun: contentRender,
+                            event: [
+                                ['click', (row) => {
+                                    row.selected = !row.selected
+                                }],
+                                ['mousemove', () => {
+                                    document.body.style.cursor = 'pointer'
+                                }],
+                                ['mouseleave', () => { }]
+                            ],
+                            size: {
+                                width: 32,
+                                height: 32
+                            }
+                        }
+                    ]
                 })
             }
 
@@ -84,7 +84,6 @@ export class TableHeader {
             });
 
             this.width = totalW;
-
         }
 
 
@@ -94,7 +93,6 @@ export class TableHeader {
     render() {
         this.cells.forEach((cell) => cell.render());
     }
-
 
     //在重绘时固定表头
     fixPosition(scrollTop: number) {
