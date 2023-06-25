@@ -28,6 +28,7 @@ export class Wrapper {
             top: this.headerH + "px",
             width: canvasW + "px",
             height: canvasH - this.headerH + "px",
+            zIndex: '-1'
         });
         addClass(bodyWrapper, "body-wrapper");
 

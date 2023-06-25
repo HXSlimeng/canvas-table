@@ -3,7 +3,7 @@ import {
   anyObj,
   ILTableInitOptions,
 } from "../table";
-import { addOn, dertf } from "../utils";
+import { addOn, dertf, rtf } from "../utils";
 import { CanvasCtx } from "./CanvasCtx";
 import { TableBody } from "./TbBody";
 import { TableHeader } from "./TbHeader";
@@ -54,6 +54,10 @@ export class Table extends CanvasCtx {
     this.scrollBar.scrollHeight = data.length * this.body.cellH;
   }
 
+  getSelectedInfo() {
+    return this.header.selectedRows.map(row => row.rowInfo)
+  }
+
   afterScroll() {
     this.body.render();
     this.header.fixPosition(this.scrollBar.scrollTop);
@@ -67,7 +71,7 @@ export class Table extends CanvasCtx {
   }
 
   setEventListener() {
-    const bodyWrapper = this.wrapper.bodyWrapper
+    const bodyWrapper = this.wrapper.container
     const scrollBar = this.scrollBar
     let scrollAct = scrollBar.scrollAct
 
@@ -84,21 +88,25 @@ export class Table extends CanvasCtx {
 
       const { offsetY, offsetX } = event;
 
-
       let { scrollTop } = this.scrollBar
       let preAct = rows.find((v) => v.active);
 
-      //active
-      let finIndex = parseInt(((offsetY + scrollTop) / cellH).toString());
-      if (preAct !== rows[finIndex]) {
+      let activeRow
+
+      if (offsetY < this.header.height) {
+        activeRow = this.header.row
+      } else {
+        let finIndex = parseInt(((offsetY + scrollTop) / cellH).toString()) - 1;
+        activeRow = rows[finIndex]
+      }
+
+      if (preAct !== activeRow) {
         if (preAct) preAct.active = false;
-        if (!rows[finIndex].active)
-          rows[finIndex].active = true;
+        if (!activeRow.active)
+          activeRow.active = true;
         //重新绘制表头  防止 后绘制的row 覆盖
         this.header.render()
       };
-
-      let activeRow = rows[finIndex]
 
       //锁定悬浮cell
       let activeCell = activeRow.cells.find(cell => {
@@ -116,7 +124,8 @@ export class Table extends CanvasCtx {
         //update event Info 
         activeCell.eventInfo = {
           point: { offsetX, offsetY: offsetY + scrollTop },
-          currentRow: activeRow
+          currentRow: activeRow,
+          dataRows: this.body.rows
         }
       }
       scrollAct()
@@ -127,6 +136,7 @@ export class Table extends CanvasCtx {
       ['mousemove', mousemoveEvent],
     ])
   }
+
 }
 
 

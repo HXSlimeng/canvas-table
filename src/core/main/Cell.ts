@@ -1,10 +1,10 @@
 import { ICellContent, ICellParams, ICellStyle, IRenderContent, anyObj } from "../table";
 import { dft } from "./../default";
-import { RATIO, dertf, getType, isPointInRectRange, rtf } from "../utils/index";
+import { IRender, RATIO, dertf, getType, isPointInRectRange, rtf } from "../utils/index";
 import { restoreCtx } from "../descriptor";
 import { Row } from "./Row";
 
-type cellInfo = [string, number | string]
+type cellInfo = [string, number | string | boolean]
 export class Cell {
   rectParams: ICellParams;
   defaultStyle: ICellStyle
@@ -17,58 +17,60 @@ export class Cell {
       offsetX: number,
       offsetY: number
     },
-    currentRow: Row
+    currentRow: Row,
+    dataRows: Row[]
   } | null = null
   private cellInfo: cellInfo
-  private activeStyle = {
-    bgColor: dft.actBgColor,
-    fontColor: dft.actFtColor,
-    font: ''
-  };
+
   private contentRender?: IRenderContent[]
-  private eventList: [keyof HTMLElementEventMap, (event: any) => void][]
 
   constructor(
     ctx: CanvasRenderingContext2D,
     rectParams: ICellParams,
-    info: [string, number | string],
+    info: [string, number | string | boolean],
     cellStyle?: ICellStyle,
-    contentRender?: IRenderContent[]
+    contentRender?: IRenderContent[] | IRenderContent
   ) {
     this.rectParams = rectParams;
     this.defaultStyle = cellStyle || { fontColor: dft.fontColor, bgColor: dft.bgColor };
-    this.ctx = ctx;
     this.cellInfo = info;
+    this.ctx = ctx;
 
     //处理事件绑定的callback
-    this.contentRender = contentRender?.map(item => {
-      let { width: cellW, height: cellH, startX, startY } = this.drawParams
+    let wrapRender = (item: IRenderContent) => {
+      let { width: cellW, height: cellH } = this.drawParams
       return {
         ...item,
-        event: item.event?.map(([key, callback]) => {
+        event: item.event?.map(([key, callback, notInrangeCb]) => {
           let managedCb = () => {
-            let { currentRow, point } = this.eventInfo!
+            let { currentRow, point, dataRows } = this.eventInfo!
             const { width, height } = item.size
 
             let ctxW: number = width
             let ctxH: number = height
 
-            let imgStartX = startX + cellW / 2 - ctxW / 2
-            let imgStartY = startY + cellH / 2 - ctxH / 2
-            if (isPointInRectRange([rtf(point.offsetX), rtf(point.offsetY + 50)], [imgStartX, imgStartY, width, height])) {
-              callback(currentRow)
+            let imgStartX = this.drawParams.startX + cellW / 2 - ctxW / 2
+            let imgStartY = this.drawParams.startY + cellH / 2 - ctxH / 2
+            if (isPointInRectRange([rtf(point.offsetX), rtf(point.offsetY)], [imgStartX, imgStartY, width, height])) {
+              callback(currentRow, dataRows)
+            } else {
+              notInrangeCb && notInrangeCb()
             }
           }
-          return [key, managedCb]
+
+          return [key, managedCb, notInrangeCb]
         })
       }
-    })
+    }
 
     if (contentRender) {
-      //@ts-ignore
-      this.eventList = contentRender.filter(v => v.event && v.event.length > 1).map(v => v.event).flat(1)
-    } else {
-      this.eventList = []
+      if (Array.isArray(contentRender)) {
+        //@ts-ignore
+        this.contentRender = contentRender?.map(wrapRender)
+      } else {
+        //@ts-ignore
+        this.contentRender = [wrapRender(contentRender)]
+      }
     }
   }
 
@@ -84,7 +86,11 @@ export class Cell {
   }
 
   get cellStyle() {
-    return this.active ? this.activeStyle : this.defaultStyle;
+    return this.active ? {
+      bgColor: dft.actBgColor,
+      fontColor: dft.actFtColor,
+      ...this.defaultStyle
+    } : this.defaultStyle;
   }
 
   get tag() {
@@ -204,6 +210,7 @@ export class Cell {
 
   onHover(row: Row, index: number) {
     this.render()
+
     // row.selected = true
   }
 

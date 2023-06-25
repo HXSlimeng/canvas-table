@@ -47,14 +47,13 @@ export class TableBody {
 
                     let rectParmas = {
                         iX,
-                        iY: y,
+                        iY: y + 1,
                         content: val,
                         startX,
                         startY: this.headerH + y * this.cellH,
                         width,
                         height: this.cellH,
                     };
-
                     // this.cells
                     rowItem.push(new Cell(this.ctx, rectParmas, [key, val], this.style, render));
                 }
@@ -73,7 +72,6 @@ export class TableBody {
             return row.rowRangeMin <= maxY && row.rowRangeMin >= -minY
         })
     }
-
     clear() {
         this.rows.forEach(row => row.clear())
     }

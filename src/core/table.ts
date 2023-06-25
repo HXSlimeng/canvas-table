@@ -1,10 +1,14 @@
 import { Row } from "./main/Row";
 
-export type ICellContent = string | SVGAElement | HTMLImageElement
+export type ICellContent = boolean | string | SVGAElement | HTMLImageElement
 
+/**
+ * renderFun 生成内容的方法
+ * event [eventKey，在render内容（如icon）内点击或其他行为的cb，在cell内不在render内容中的事件触发cb]
+ */
 export type IRenderContent = {
   renderFun: (val: any, index: number) => ICellContent,
-  event?: [keyof HTMLElementEventMap, (row: Row) => void][],
+  event?: [keyof HTMLElementEventMap, (row: Row, dataRows: Row[]) => void, Function?][],
   size: {
     width: number,
     height: number
@@ -12,10 +16,11 @@ export type IRenderContent = {
 }
 
 export interface ItableColumn {
-  title: string;
+  title: string | boolean;
   prop: string;
   width?: number;
-  render?: IRenderContent[]
+  render?: IRenderContent[] | IRenderContent,
+  headRender?: IRenderContent[] | IRenderContent
 }
 
 export interface ILTableInitOptions {
@@ -52,7 +57,7 @@ export type IColumnMap = Map<
     width: number;
     startX: number;
     iX: number;
-    render?: IRenderContent[]
+    render?: IRenderContent[] | IRenderContent
   }
 >;
 
