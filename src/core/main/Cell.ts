@@ -1,28 +1,35 @@
 import { ICellContent, ICellParams, ICellStyle, IRenderContent, anyObj } from "../table";
 import { dft } from "./../default";
-import { IRender, RATIO, dertf, getType, isPointInRectRange, rtf } from "../utils/index";
+import { IRender, RATIO, addClass, dertf, getType, h, isPointInRectRange, rtf, setStyle } from "../utils/index";
 import { restoreCtx } from "../descriptor";
 import { Row } from "./Row";
+import { debounce } from "../utils/index";
 
 type cellInfo = [string, number | string | boolean]
+
+
 export class Cell {
   rectParams: ICellParams;
   defaultStyle: ICellStyle
   ctx: CanvasRenderingContext2D;
   active = false;
   fitText: string | null = null
+  messageTimer: NodeJS.Timeout | null = null
+  textEllipsis: boolean = false
+  messageDom: HTMLElement | null = null
   mouseOver = false
   eventInfo: {
     point: {
       offsetX: number,
-      offsetY: number
+      offsetY: number,
+      scrollTop: number,
+      scrollLeft: number
     },
     currentRow: Row,
     dataRows: Row[]
   } | null = null
   private cellInfo: cellInfo
-
-  private contentRender?: IRenderContent[]
+  contentRender?: IRenderContent[]
 
   constructor(
     ctx: CanvasRenderingContext2D,
@@ -51,7 +58,11 @@ export class Cell {
 
             let imgStartX = this.drawParams.startX + cellW / 2 - ctxW / 2
             let imgStartY = this.drawParams.startY + cellH / 2 - ctxH / 2
-            if (isPointInRectRange([rtf(point.offsetX), rtf(point.offsetY)], [imgStartX, imgStartY, width, height])) {
+
+            let startX = point.offsetX + point.scrollLeft
+            let startY = point.offsetY + point.scrollTop
+
+            if (isPointInRectRange([rtf(startX), rtf(startY)], [imgStartX, imgStartY, width, height])) {
               callback(currentRow, dataRows)
             } else {
               notInrangeCb && notInrangeCb()
@@ -113,7 +124,14 @@ export class Cell {
 
   set hovering(val: boolean) {
     this.mouseOver = val
+    this.showMessageIfneed()
     val ? this.eventOn() : this.eventOff()
+    if (!val && this.messageTimer) {
+      clearTimeout(this.messageTimer)
+      if (this.messageDom) {
+        this.messageDom.remove()
+      }
+    };
   }
 
   get hovering() {
@@ -122,13 +140,14 @@ export class Cell {
 
   getFitText(text: string) {
     const { ctx, drawParams: { width }, fitText } = this
-
     if (fitText) return fitText
 
-    let textW = ctx.measureText(text).width
+    let textW = rtf(ctx.measureText(text).width)
+    let maxW = dertf(width) - 20
 
-    if (textW <= width) {
+    if (textW <= maxW) {
       this.fitText = text
+      this.textEllipsis = false
       return text
     } else {
       let len = 0
@@ -138,10 +157,12 @@ export class Cell {
       do {
         i++
         str = text.slice(0, i)
-        len = ctx.measureText(str + ellipsis).width
-      } while (len >= width);
+        len = rtf(ctx.measureText(str + ellipsis).width)
+      } while (len <= maxW);
+
       this.fitText = str + ellipsis
-      return str
+      this.textEllipsis = true
+      return str + ellipsis
     }
   }
 
@@ -167,7 +188,7 @@ export class Cell {
     if (this.contentRender) {
       const { iY } = this.rectParams
       this.contentRender.forEach(({ renderFun, size }) => {
-        this.drawItem(renderFun(this.value, iY), { ...size })
+        this.drawItem(renderFun(this.value, iY), size)
       })
     } else if (Array.isArray(content)) {
       content.forEach(item => this.drawItem(item))
@@ -185,6 +206,7 @@ export class Cell {
     if (getType(content) === 'string') {
       const { fontColor, font } = this.cellStyle
       const fitText = this.getFitText(content as string)
+
       ctx.font = `${font || ''} ${RATIO}rem sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
@@ -210,7 +232,6 @@ export class Cell {
 
   onHover(row: Row, index: number) {
     this.render()
-
     // row.selected = true
   }
 
@@ -220,7 +241,6 @@ export class Cell {
     this.contentRender?.forEach(ctx => {
 
       if (ctx.event?.length) {
-
         ctx.event.forEach(([key, callback]) => {
           root?.addEventListener(key, callback as any)
         })
@@ -246,4 +266,40 @@ export class Cell {
     this.ctx.clearRect(startX, startY, width, height);
   }
 
+  private renderMessageTooltip(content: string) {
+    try {
+      let container = this.ctx.canvas.parentElement!
+      if (!this.messageDom) {
+        const { point } = this.eventInfo!
+        let tooltip = h('div')
+        tooltip.innerText = content
+        addClass(tooltip, 'tooltipText')
+        setStyle(tooltip, {
+          top: point.offsetY + 'px',
+          left: point.offsetX + 'px',
+        })
+        this.messageDom = tooltip
+      }
+      container.appendChild(this.messageDom)
+    } catch (error) {
+      console.log(error);
+
+    }
+  }
+  showMessageIfneed() {
+    if (!this.textEllipsis) return;
+    let { content, iY } = this.rectParams
+    if (this.contentRender) {
+      content = this.contentRender[0].renderFun(this.value, iY)
+    }
+    if (typeof content === 'string') {
+
+      if (this.messageTimer) {
+        clearTimeout(this.messageTimer)
+      }
+      this.messageTimer = setTimeout(() => {
+        this.renderMessageTooltip(content as string)
+      }, 1000)
+    }
+  }
 }

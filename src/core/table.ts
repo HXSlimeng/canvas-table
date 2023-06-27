@@ -24,7 +24,6 @@ export interface ItableColumn {
 }
 
 export interface ILTableInitOptions {
-
   columns: ItableColumn[];
   columnH?: number;
   headerBackGround?: string;

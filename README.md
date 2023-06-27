@@ -58,7 +58,7 @@ tbInstance.data = data;
 
    Parameters:
 
-   - `dom`: 宿主dom或者宿主id / class, Type：HTMLElement | string
+   - `dom`: 宿主 dom 或者宿主 id / class, Type：HTMLElement | string
    - `options`
 
    | 名称             | 类型           | 说明         |
@@ -67,16 +67,12 @@ tbInstance.data = data;
    | columnH          | number         | 表头高度     |
    | headerBackground | stirng         | 表头背景颜色 |
 
-   - `options.column` 
-   
+   - `options.column`
+
      ItableColumn
-   
+
    | 名称  | 类型   | 说明   |
    | ----- | ------ | ------ |
    | title | string | 标题   |
    | prop  | string | 标识   |
    | width | number | 列宽度 |
-   
-   
-
-

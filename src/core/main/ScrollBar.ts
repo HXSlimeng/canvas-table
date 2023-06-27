@@ -28,6 +28,7 @@ export class ScrollBar {
     scrollHeight: 0,
   };
   scrollAct: Function
+  container: HTMLElement
 
   private canvasW: number;
   private canvasH: number;
@@ -41,6 +42,8 @@ export class ScrollBar {
     this.ctx = ctx;
     this.repaint = repaint;
     this.headerH = headerH;
+    this.container = this.ctx.canvas.parentElement!.querySelector('.body-wrapper')!
+
     const { width: canvasW, height: canvasH } =
       rootDom.getBoundingClientRect();
     this.canvasH = canvasH;
@@ -80,7 +83,7 @@ export class ScrollBar {
         width: `${dft.scrollW}px`,
         background: dft.scrollBg,
         visibility: 'hidden',
-        top: this.headerH + 'px',
+        // top: this.headerH + 'px',
       });
 
       addClass(verticalScroll, "scrollRight", "scroll", 'hidden');
@@ -123,8 +126,7 @@ export class ScrollBar {
       };
     }
 
-    canvasDom.after(verticalScroll);
-    canvasDom.after(horizonScroll);
+    this.container.append(verticalScroll, horizonScroll);
     [verticalScroll, horizonScroll].forEach(dom => {
       on(dom, 'transitionend', () => {
         const opacity = getComputedStyle(dom).opacity

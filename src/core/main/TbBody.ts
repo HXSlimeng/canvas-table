@@ -41,7 +41,6 @@ export class TableBody {
 
             Object.entries(row).forEach(([key, val]) => {
                 const col = this.colMap.get(key);
-
                 if (col) {
                     const { startX, width, iX, render } = col;
 
@@ -55,6 +54,7 @@ export class TableBody {
                         height: this.cellH,
                     };
                     // this.cells
+
                     rowItem.push(new Cell(this.ctx, rectParmas, [key, val], this.style, render));
                 }
             });

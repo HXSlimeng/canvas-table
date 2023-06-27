@@ -1,4 +1,4 @@
-import { h, setStyle, addClass } from "../utils";
+import { h, setStyle, addClass, on, off } from "../utils";
 
 export class Wrapper {
     private ctx: CanvasRenderingContext2D
@@ -28,7 +28,8 @@ export class Wrapper {
             top: this.headerH + "px",
             width: canvasW + "px",
             height: canvasH - this.headerH + "px",
-            zIndex: '-1'
+            pointerEvents: 'none'
+            // zIndex: '-1',
         });
         addClass(bodyWrapper, "body-wrapper");
 

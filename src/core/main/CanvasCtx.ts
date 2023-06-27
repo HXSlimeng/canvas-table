@@ -4,15 +4,14 @@ export class CanvasCtx {
   ctx: CanvasRenderingContext2D;
   root: HTMLElement;
   canvasEl: HTMLCanvasElement
-  style = {
-    height: 0,
-    width: 0,
-  };
 
   constructor(dom: HTMLElement) {
     this.root = dom;
 
     let canvasDom = document.createElement('canvas')
+
+    canvasDom.id = 'lmh-canvas'
+
     this.ctx = canvasDom.getContext("2d")!;
     this.canvasEl = canvasDom
 
@@ -20,24 +19,26 @@ export class CanvasCtx {
     addClass(this.root, 'canvas-root')
 
     this.setCanvasSize();
+
   }
 
-  setCanvasSize() {
+  setCanvasSize(scrollMaxInfo?: { scrollHeight: number, scrollWidth: number }) {
     let { f, e } = this.ctx.getTransform()
     const { canvasEl, root } = this;
-    const { width, height } = root.getBoundingClientRect()
+    let { width: caculateW, height: caculateH } = root.getBoundingClientRect()
 
+    if (scrollMaxInfo) {
+      const { scrollHeight, scrollWidth } = scrollMaxInfo
+      caculateH = caculateH > scrollHeight ? scrollHeight : caculateH
+      caculateW = caculateW > scrollWidth ? scrollWidth : caculateW
+    }
 
-    let cfgW: number, cfgH: number;
-    this.style.width = cfgW = width;
-    this.style.height = cfgH = height;
-
-    canvasEl.width = rtf(cfgW)
-    canvasEl.height = rtf(cfgH)
+    canvasEl.width = rtf(caculateW)
+    canvasEl.height = rtf(caculateH)
 
     setStyle(canvasEl, {
-      width: `${cfgW}px`,
-      height: `${cfgH}px`
+      width: `${caculateW}px`,
+      height: `${caculateH}px`
     })
 
     //改变尺寸后同步之前的transform

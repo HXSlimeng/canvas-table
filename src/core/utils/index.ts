@@ -71,6 +71,21 @@ export function isPointInRectRange(point: [number, number], rangeRect: [number, 
   return yInRange && xInRange
 
 }
+//防抖工具方法
+export function debounce<T extends (...args: any[]) => any>(func: T, wait: number) {
+  let timer: NodeJS.Timeout | null = null
+  return function (...args: any[]) {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(() => {
+      //@ts-ignore
+      func.apply(this as any, args)
+    }, wait)
+  }
+}
+
+
+
+
 
 
 

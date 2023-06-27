@@ -11,7 +11,8 @@ export default defineConfig({
       entry: resolve(__dirname, './src/main.ts'),
       name: 'lmh-table'
     },
-    cssCodeSplit: true
+    cssCodeSplit: true,
+    sourcemap: true
   },
   css: {
 

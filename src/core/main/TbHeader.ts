@@ -100,7 +100,7 @@ export class TableHeader {
                             row.selected = !row.selected
                             //head selected 当数据选择发生变化时
                             let allSelectedStatus = true
-                            let selectedRows = []
+                            let selectedRows: Row[] = []
                             for (let i = 0; i < dataRows.length; i++) {
                                 const row = dataRows[i];
                                 if (!row.selected) {
@@ -114,14 +114,13 @@ export class TableHeader {
                         ...cursorEvt as any
                     ],
                     size
-                }
-                ,
+                },
                 headRender: {
                     renderFun: selectedIconRender,
                     event: [
                         ['click', (row, dataRows) => {
                             let resultSelected = !row.selected
-                            let selectedRow = []
+                            let selectedRow: Row[] = []
                             for (let i = 0; i < dataRows.length; i++) {
                                 const row = dataRows[i];
                                 row.selected = resultSelected
