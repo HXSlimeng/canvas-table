@@ -2,11 +2,9 @@ import { ILTableInitOptions } from "../table";
 import { addClass, rtf, setStyle } from "../utils";
 export class CanvasCtx {
   ctx: CanvasRenderingContext2D;
-  root: HTMLElement;
   canvasEl: HTMLCanvasElement
 
-  constructor(dom: HTMLElement) {
-    this.root = dom;
+  constructor(private root: HTMLElement) {
 
     let canvasDom = document.createElement('canvas')
 

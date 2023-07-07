@@ -3,15 +3,12 @@ import { dft } from "./../default";
 import { IRender, RATIO, addClass, dertf, getType, h, isPointInRectRange, rtf, setStyle } from "../utils/index";
 import { restoreCtx } from "../descriptor";
 import { Row } from "./Row";
-import { debounce } from "../utils/index";
 
 type cellInfo = [string, number | string | boolean]
 
 
 export class Cell {
-  rectParams: ICellParams;
   defaultStyle: ICellStyle
-  ctx: CanvasRenderingContext2D;
   active = false;
   fitText: string | null = null
   messageTimer: NodeJS.Timeout | null = null
@@ -28,20 +25,16 @@ export class Cell {
     currentRow: Row,
     dataRows: Row[]
   } | null = null
-  private cellInfo: cellInfo
   contentRender?: IRenderContent[]
 
   constructor(
-    ctx: CanvasRenderingContext2D,
-    rectParams: ICellParams,
-    info: [string, number | string | boolean],
+    public ctx: CanvasRenderingContext2D,
+    public rectParams: ICellParams,
+    public cellInfo: [string, number | string | boolean],
     cellStyle?: ICellStyle,
     contentRender?: IRenderContent[] | IRenderContent
   ) {
-    this.rectParams = rectParams;
     this.defaultStyle = cellStyle || { fontColor: dft.fontColor, bgColor: dft.bgColor };
-    this.cellInfo = info;
-    this.ctx = ctx;
 
     //处理事件绑定的callback
     let wrapRender = (item: IRenderContent) => {

@@ -3,13 +3,12 @@ import { SignStr } from "../enum/default";
 import { anyObj } from "../table";
 
 export class Row {
-    rowInfo: anyObj;
-    cells: Cell[];
     rowRangeMin: number
     private rowActive = false;
-    constructor(cells: Cell[], info: anyObj) {
-        this.rowInfo = info;
-        this.cells = cells;
+    constructor(
+        public cells: Cell[],
+        public rowInfo: anyObj
+    ) {
 
         const { drawParams: { startY } } = cells[0]
         this.rowRangeMin = startY

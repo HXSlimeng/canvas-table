@@ -5,9 +5,7 @@ import { Row } from "./Row";
 import { SignStr } from "../enum/default";
 
 export class TableBody {
-    ctx: CanvasRenderingContext2D;
     rows: Row[] = [];
-    colMap: IColumnMap;
     cellH: number;
     headerH: number;
     currentRenderRows: Row[] = []
@@ -18,12 +16,10 @@ export class TableBody {
     };
 
     constructor(
-        ctx: CanvasRenderingContext2D,
-        colMap: IColumnMap,
+        public ctx: CanvasRenderingContext2D,
+        public colMap: IColumnMap,
         option: IbodyOption
     ) {
-        this.ctx = ctx;
-        this.colMap = colMap;
         this.cellH = option.cellH || dft.cellH;
         this.headerH = option.colH;
     }

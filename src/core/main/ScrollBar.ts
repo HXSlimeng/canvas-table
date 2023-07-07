@@ -14,13 +14,8 @@ export interface IScroll {
 }
 
 export class ScrollBar {
-  headerH: number;
-
   private scrollY: IScroll;
   private scrollX: IScroll;
-
-  ctx: CanvasRenderingContext2D;
-  repaint: Function;
   private info = {
     scrollTop: 0,
     scrollLeft: 0,
@@ -34,14 +29,11 @@ export class ScrollBar {
   private canvasH: number;
 
   constructor(
-    ctx: CanvasRenderingContext2D,
-    headerH: number,
-    repaint: Function
+    public ctx: CanvasRenderingContext2D,
+    public headerH: number,
+    public repaint: Function
   ) {
     const rootDom = ctx.canvas;
-    this.ctx = ctx;
-    this.repaint = repaint;
-    this.headerH = headerH;
     this.container = this.ctx.canvas.parentElement!.querySelector('.body-wrapper')!
 
     const { width: canvasW, height: canvasH } =
