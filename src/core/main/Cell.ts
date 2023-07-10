@@ -37,7 +37,7 @@ export class Cell {
     this.defaultStyle = cellStyle || { fontColor: dft.fontColor, bgColor: dft.bgColor };
 
     //处理事件绑定的callback
-    let wrapRender = (item: IRenderContent) => {
+    let wrapedRender = (item: IRenderContent) => {
       let { width: cellW, height: cellH } = this.drawParams
       return {
         ...item,
@@ -70,10 +70,10 @@ export class Cell {
     if (contentRender) {
       if (Array.isArray(contentRender)) {
         //@ts-ignore
-        this.contentRender = contentRender?.map(wrapRender)
+        this.contentRender = contentRender?.map(wrapedRender)
       } else {
         //@ts-ignore
-        this.contentRender = [wrapRender(contentRender)]
+        this.contentRender = [wrapedRender(contentRender)]
       }
     }
   }
@@ -180,8 +180,8 @@ export class Cell {
     const { content } = this.drawParams
     if (this.contentRender) {
       const { iY } = this.rectParams
-      this.contentRender.forEach(({ renderFun, size }) => {
-        this.drawItem(renderFun(this.value, iY), size)
+      this.contentRender.forEach(({ renderFun, size, click }) => {
+        this.drawItem(renderFun(this.value, iY), click, size)
       })
     } else if (Array.isArray(content)) {
       content.forEach(item => this.drawItem(item))
@@ -192,7 +192,7 @@ export class Cell {
   }
 
   @restoreCtx
-  drawItem(content: ICellParams['content'] | ICellParams['content'][], size?: { width: number, height: number }) {
+  drawItem(content: ICellContent | ICellContent[], click?: boolean, size?: { width: number, height: number }) {
     const { ctx } = this
     const { startX, startY, width: cellW, height: cellH } = this.drawParams
 
@@ -203,7 +203,7 @@ export class Cell {
       ctx.font = `${font || ''} ${RATIO}rem sans-serif`;
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillStyle = fontColor || dft.fontColor;
+      ctx.fillStyle = click ? '#409eff' : fontColor || dft.fontColor;
       ctx.fillText(fitText, startX + cellW / 2, startY + cellH / 2);
 
     } else if (content instanceof HTMLImageElement) {
@@ -292,7 +292,7 @@ export class Cell {
       }
       this.messageTimer = setTimeout(() => {
         this.renderMessageTooltip(content as string)
-      }, 1000)
+      }, 500)
     }
   }
 }

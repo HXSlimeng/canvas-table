@@ -13,6 +13,7 @@ export type IRenderContent = {
     width: number,
     height: number
   }
+  click?: boolean
 }
 
 export interface ItableColumn {

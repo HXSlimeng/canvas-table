@@ -19,7 +19,8 @@ let operateColumn: ItableColumn = {
         size: {
             width: rtf(35),
             height: 50
-        }
+        },
+        click: true
     },
     width: 200,
 }

@@ -79,15 +79,17 @@ export class TableHeader {
                 height: 32
             }
 
-            let cursorEvt = [['mousemove',
-                () => {
-                    document.body.style.cursor = 'pointer'
-                },
-                () => {
-                    document.body.style.cursor = 'auto'
-                }
-            ],
-            ['mouseleave', () => { }]]
+            let cursorEvt = [
+                ['mousemove',
+                    () => {
+                        document.body.style.cursor = 'pointer'
+                    },
+                    () => {
+                        document.body.style.cursor = 'auto'
+                    }
+                ],
+                ['mouseleave', () => { }]
+            ]
 
             columns.unshift({
                 title: false,
@@ -135,6 +137,7 @@ export class TableHeader {
 
             })
         }
+
         return columns
     }
 
