@@ -38,7 +38,7 @@ const tableInstance = setUpTable("#l-table", {
 });
 ```
 
-3、添加数据
+3、更改表格数据
 
 ```typescript
 let data = Array.from({ length: 100 }).map((_, y) => {
