@@ -36,13 +36,7 @@ export class Table extends CanvasCtx {
     //setup时 先绘制已经确定的表头
     this.header.render();
 
-    this.wrapper.obSize(() => {
-      const { scrollHeight, scrollWidth } = this.scrollBar
-      this.setCanvasSize({ scrollHeight, scrollWidth });
-      this.scrollBar.resize();
-      this.body.render();
-      this.header.fixPosition(this.scrollBar.scrollTop);
-    });
+    this.wrapper.obSize(this.afterWrapperResize.bind(this));
 
     this.setEventListener();
     // this.autoScroll()
@@ -150,5 +144,13 @@ export class Table extends CanvasCtx {
       ["wheel", wheelEvent],
       ["mousemove", mousemoveEvent],
     ]);
+  }
+
+  afterWrapperResize() {
+    const { scrollHeight, scrollWidth } = this.scrollBar
+    this.setCanvasSize({ scrollHeight, scrollWidth });
+    this.scrollBar.resize();
+    this.body.render();
+    this.header.fixPosition(this.scrollBar.scrollTop);
   }
 }

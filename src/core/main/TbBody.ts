@@ -76,8 +76,6 @@ export class TableBody {
         //render前将缓存的图像clear
         this.currentRenderRows.forEach(row => row.clear())
         this.currentRenderRows = this.visibleRangeData
-
         this.currentRenderRows.forEach(row => row.render())
-
     }
 }

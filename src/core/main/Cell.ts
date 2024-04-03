@@ -1,6 +1,6 @@
 import { ICellContent, ICellParams, ICellStyle, IRenderContent, anyObj } from "../table";
 import { dft } from "./../default";
-import { IRender, RATIO, addClass, dertf, getType, h, isPointInRectRange, rtf, setStyle } from "../utils/index";
+import { RATIO, addClass, dertf, getType, h, isPointInRectRange, rtf, setStyle } from "../utils/index";
 import { restoreCtx } from "../descriptor";
 import { Row } from "./Row";
 

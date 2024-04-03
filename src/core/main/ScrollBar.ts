@@ -138,10 +138,9 @@ export class ScrollBar {
   get showScrollX() {
     return this.scrollX.show
   }
-
   set scrollWidth(val: number) {
     this.info.scrollWidth = val
-    this.setScrollRect('x')
+    this.drawScroll('x')
   }
 
   get scrollWidth() {
@@ -150,7 +149,7 @@ export class ScrollBar {
 
   set scrollHeight(val: number) {
     this.info.scrollHeight = val;
-    this.setScrollRect('y')
+    this.drawScroll('y')
   }
 
   get scrollHeight() {
@@ -192,12 +191,13 @@ export class ScrollBar {
   get scrollLeft() {
     return this.info.scrollLeft;
   }
-  setScrollRect(type: 'x' | 'y') {
+  //重新绘制滚动条
+  drawScroll(type: 'x' | 'y') {
     const { scrollHeight, scrollWidth } = this
     if (type === 'y') {
       const scroll = this.scrollY
       const inner = scroll.inner
-      const total = this.info.scrollHeight
+      const total = this.scrollHeight
       let realBodyH = this.bodyHeight;
 
       let scrollLen = realBodyH - dft.scrollW
@@ -217,17 +217,17 @@ export class ScrollBar {
     } else {
       const scroll = this.scrollX
       const inner = scroll.inner
-      const total = this.info.scrollWidth
+      const total = this.scrollWidth
       let realBodyW = this.canvasW;
 
       let scrollLen = realBodyW - dft.scrollW
-      let innerH = (realBodyW / total) * scrollLen;
+      let innerW = (realBodyW / total) * scrollLen;
 
-      inner.len = innerH
+      inner.len = innerW
       this.scrollX.len = scrollLen
 
       setStyle(inner.dom, {
-        width: innerH + "px",
+        width: innerW + "px",
       });
       setStyle(scroll.dom, {
         width: scrollLen + 'px'
@@ -296,7 +296,7 @@ export class ScrollBar {
     addEventListener('mouseup', () => removeEventListener('mousemove', moveEvent))
   }
 
-  toogleScrollIfNeed(show: boolean) {
+  private toogleScrollIfNeed(show: boolean) {
 
     const { scrollX, scrollY } = this
 
@@ -309,16 +309,19 @@ export class ScrollBar {
     display(scrollY.dom, show && scrollY.show)
   }
 
-  resetScroll() {
-
-  }
-
   resize() {
     const { width: canvasW, height: canvasH } = this.ctx.canvas.getBoundingClientRect()
     this.canvasH = canvasH
     this.canvasW = canvasW
-    this.setScrollRect('x')
-    this.setScrollRect('y')
+    this.resetScroll()
+    this.drawScroll('x')
+    this.drawScroll('y')
+  }
+  private resetScroll() {
+    let overflowW = this.scrollWidth - this.scrollLeft - this.canvasW
+    let overflowH = this.scrollHeight - this.scrollTop - this.canvasH
+    if (overflowW < 0) { this.move("x", -overflowW); } else { this.scrollLeft = this.scrollLeft; };//为了触发set方法以更新滚动条
+    if (overflowH < 0) { this.move("y", -overflowH); } else { this.scrollTop = this.scrollTop; };//同理
   }
   private timerShowScroll() {
     let timer: null | NodeJS.Timer = null

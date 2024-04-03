@@ -1,7 +1,6 @@
 import { ILTableInitOptions } from "./core/table";
 import { Table } from "./core/main";
 import { getType } from "./core/utils";
-
 import "../style.css";
 
 type IsetupTableMt = (

@@ -1,4 +1,3 @@
-import { ILTableInitOptions } from "../table";
 import { addClass, rtf, setStyle } from "../utils";
 export class CanvasCtx {
   ctx: CanvasRenderingContext2D;

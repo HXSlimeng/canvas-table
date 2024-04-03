@@ -66,11 +66,12 @@ tbInstance.data = data;
    | column           | ItableColumn[] | 表头配置     |
    | columnH          | number         | 表头高度     |
    | headerBackground | stirng         | 表头背景颜色 |
-
-   - `options.column`
-
-     ItableColumn
-
+| selectable       | boolean        | 是否开启多选 |
+   
+- `options.column`
+   
+  ItableColumn
+   
    | 名称  | 类型   | 说明   |
    | ----- | ------ | ------ |
    | title | string | 标题   |

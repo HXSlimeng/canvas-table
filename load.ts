@@ -30,7 +30,7 @@ const tbInstance = setupTable("#l-table", {
     columnH: 50,
     selectable: true
 });
-let data = Array.from({ length: 1000 }).map((_, y) => {
+let data = Array.from({ length: 100000 }).map((_, y) => {
     let obj: anyObj = {};
     [...mockData, operateColumn].forEach(({ prop }, x) => {
         if (prop !== 'selected') {
